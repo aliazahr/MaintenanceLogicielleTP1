@@ -16,7 +16,8 @@ namespace SchoolManager
             typePrincipal = 1,
             typeTeacher,
             typeStudent,
-            typeReceptionist
+            typeReceptionist,
+            cancelOperation = 5
         }
 
         public static SchoolMember AcceptAttributes()
@@ -39,16 +40,16 @@ namespace SchoolManager
         private static int AcceptChoices()
         {
             const int minInput = 1;
-            const int maxInput = 5;
+            const int maxInput = 6;
             Console.WriteLine("\n====== Menu ======");
-            return Util.Console.AskQuestionMenu("1. Add\n2. Display\n3. Pay\n4. Raise Complaint\n5. Student Performance\nPlease enter the member type: ", minInput, maxInput);
+            return Util.Console.AskQuestionMenu("1. Add\n2. Display\n3. Pay\n4. Raise Complaint\n5. Student Performance\n6. Exit\nPlease enter your desired option: ", minInput, maxInput);
         }
 
         private static int AcceptMemberType()
         {
             const int minInput = 1;
-            const int maxInput = 4;
-            int x = Util.Console.AskQuestionMenu("\n1. Principal\n2. Teacher\n3. Student\n4. Receptionist\nPlease enter the member type: ", minInput, maxInput);
+            const int maxInput = 5;
+            int x = Util.Console.AskQuestionMenu("\n1. Principal\n2. Teacher\n3. Student\n4. Receptionist\n5. Cancel\nPlease enter the member type: ", minInput, maxInput);
 
             return Enum.IsDefined(typeof(SchoolMemberType), x) ? x : -1;
         }
@@ -142,6 +143,9 @@ namespace SchoolManager
                     case 3:
                         AddStudent();
                         break;
+                    case 5:
+                        Console.WriteLine("\nOperation cancelled.");
+                        break;
                     default:
                         Console.WriteLine("\nInvalid input. Terminating operation.");
                         break;
@@ -178,6 +182,9 @@ namespace SchoolManager
                     Console.WriteLine("\nThe Receptionist's details are:");
                     Receptionist.Display();
                     break;
+                case 5:
+                    Console.WriteLine("\nOperation cancelled.");
+                    break;
                 default:
                     Console.WriteLine("\nInvalid input. Terminating operation.");
                     break;
@@ -196,6 +203,13 @@ namespace SchoolManager
                 {
                     Console.WriteLine("\nStudents cannot be paid. Please select a different member type.");
                     memberType = AcceptMemberType();
+                }
+
+                // Mise dans un if case au lieu du switch case pour éviter l'impression de "Payments in progress..." et de "Payments completed"
+                if (memberType == 5)
+                {
+                    Console.WriteLine("\nOperation cancelled.");
+                    return;
                 }
 
                 Console.WriteLine("\nPayments in progress...");
@@ -257,7 +271,23 @@ namespace SchoolManager
 
         public static void RaiseComplaint()
         {
-            Receptionist.HandleComplaint();
+            Console.WriteLine("\n--- Raise Complaint ---");
+
+            Console.WriteLine("1. Submit Complaint\n2. Cancel");
+            int choice = Util.Console.AskQuestionMenu("Please enter your choice: ", 1, 2);
+
+            switch (choice)
+            {
+                case 1:
+                    Receptionist.HandleComplaint();
+                    break;
+                case 2:
+                    Console.WriteLine("\nOperation cancelled.");
+                    break;
+                default:
+                    Console.WriteLine("\nInvalid input. Terminating operation.");
+                    break;
+            }
         }
 
         private static void HandleComplaintRaised(object? sender, Complaint complaint)
@@ -323,6 +353,10 @@ namespace SchoolManager
                         break;
                     case 5:
                         await ShowPerformance();
+                        break;
+                    case 6:
+                        Console.WriteLine("\n-------------- Bye --------------");
+                        Environment.Exit(0);
                         break;
                     default:
                         flag = false;
