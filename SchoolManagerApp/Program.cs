@@ -26,8 +26,8 @@ namespace SchoolManager
             {
                 SchoolMember member = new SchoolMember();
                 member.Name = Util.Console.AskQuestionName("Enter name: ");
-                member.Address = Util.Console.AskQuestionAddress("Enter address: ");
-                member.Phone = Util.Console.AskQuestionPhoneNumber("Enter phone number: ");
+                member.Address = Util.Console.AskQuestionAddress("--- Enter address ---");
+                member.Phone = Util.Console.AskQuestionPhoneNumber("\nEnter phone number: ");
 
                 return member;
             }

@@ -117,11 +117,6 @@ namespace Util
                     }
                 }
 
-                while (!int.TryParse(System.Console.ReadLine(), out streetNumber) || streetNumber <= 0)
-                {
-                    System.Console.Write("Invalid input. Please enter a valid street number: ");
-                }
-
                 // Street name input
                 string streetName = AskQuestionName("Enter street name: ");
 
