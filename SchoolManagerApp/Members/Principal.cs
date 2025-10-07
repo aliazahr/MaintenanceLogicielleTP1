@@ -29,8 +29,41 @@ namespace SchoolManager
 
         public async Task PayAsync()
         {
-            balance = await Util.NetworkDelay.PayEntityAsync(balance, income);
-            Console.WriteLine($"\nPaid Principal: {Name}. Total balance: {balance}");
+            try
+            {
+                if (income < 0)
+                {
+                    throw new InvalidOperationException("Principal income cannot be negative.");
+                }
+
+                if (balance < 0)
+                {
+                    throw new InvalidOperationException("Principal balance cannot be negative before payment.");
+                }
+
+                int oldBalance = balance;
+                balance = await Util.NetworkDelay.PayEntityAsync(balance, income);
+
+                if (balance < oldBalance)
+                {
+                    throw new InvalidOperationException("Balance decreased after payment.");
+                }
+
+                Console.WriteLine($"\nPaid Principal: {Name}. Total balance: {balance}");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Payment failed for principal {Name}. Error: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Payment failed for principal {Name}. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected payment error occurred while paying Principal: {Name}. Error: {ex.Message}");
+                throw new InvalidOperationException("Unexpected error during principal payment.", ex);
+            }
         }
     }
 }

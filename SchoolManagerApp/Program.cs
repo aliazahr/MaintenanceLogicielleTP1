@@ -186,40 +186,73 @@ namespace SchoolManager
 
         public static async Task Pay()
         {
-            Console.WriteLine("\n--- Pay School Members ---");
-            Console.WriteLine("\nPlease note that the students cannot be paid.");
-            int memberType = AcceptMemberType();
-
-            while (memberType == 3)
+            try
             {
-                Console.WriteLine("\nStudents cannot be paid. Please select a different member type.");
-                memberType = AcceptMemberType();
+                Console.WriteLine("\n--- Pay School Members ---");
+                Console.WriteLine("\nPlease note that the students cannot be paid.");
+                int memberType = AcceptMemberType();
+
+                while (memberType == 3)
+                {
+                    Console.WriteLine("\nStudents cannot be paid. Please select a different member type.");
+                    memberType = AcceptMemberType();
+                }
+
+                Console.WriteLine("\nPayments in progress...");
+
+                switch (memberType)
+                {
+                    case 1:
+                        if (Principal == null)
+                        {
+                            Console.WriteLine("\nNo principal available to pay.");
+                            return;
+                        }
+
+                        await Principal.PayAsync();
+                        break;
+                    case 2:
+                        if (Teachers.Count == 0 || Teachers == null)
+                        {
+                            Console.WriteLine("\nNo teachers available to pay.");
+                            return;
+                        }
+
+                        var teacherTasks = Teachers.Select(teacher =>
+                        {
+                            if (teacher == null)
+                            {
+                                throw new InvalidOperationException("\nNull teacher found, skipping payment.");
+                            }
+                            return teacher.PayAsync();
+                        }).ToArray();
+
+                        await Task.WhenAll(teacherTasks);
+                        break;
+                    case 4:
+                        if (Receptionist == null)
+                        {
+                            Console.WriteLine("\nNo receptionist available to pay.");
+                            return;
+                        }
+
+                        await Receptionist.PayAsync();
+                        break;
+                    default:
+                        Console.WriteLine("\nInvalid input. Terminating operation.");
+                        break;
+                }
+
+                Console.WriteLine("\nPayments completed.\n");
             }
-
-            Console.WriteLine("\nPayments in progress...");
-
-            switch (memberType)
+            catch (InvalidOperationException ex)
             {
-                case 1:
-                    await Principal.PayAsync();
-                    break;
-                case 2:
-                    var teacherTasks = Teachers.Select(teacher =>
-                    {
-                        return teacher.PayAsync();
-                    }).ToArray();
-
-                    await Task.WhenAll(teacherTasks);
-                    break;
-                case 4:
-                    await Receptionist.PayAsync();
-                    break;
-                default:
-                    Console.WriteLine("\nInvalid input. Terminating operation.");
-                    break;
+                Console.WriteLine($"Payment operation failed: {ex.Message}");
             }
-
-            Console.WriteLine("\nPayments completed.\n");
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error during payment operation: {ex.Message}");
+            }
         }
 
         public static void RaiseComplaint()
@@ -227,7 +260,7 @@ namespace SchoolManager
             Receptionist.HandleComplaint();
         }
 
-        private static void handleComplaintRaised(object? sender, Complaint complaint)
+        private static void HandleComplaintRaised(object? sender, Complaint complaint)
         {
             Console.WriteLine("\nThis is a confirmation that we received your complaint. The details are as follows:");
             Console.WriteLine($"---------\nComplaint Time: {complaint.ComplaintTime.ToLongDateString()}, {complaint.ComplaintTime.ToLongTimeString()}");
@@ -247,7 +280,7 @@ namespace SchoolManager
             Address principalAddress = new Address(456, "Rue Gauchetiere", "Montreal", "QC", "B2B 2B2", "Canada");
             
             Receptionist = new Receptionist("Receptionist", receptionistAddress, 123);
-            Receptionist.ComplaintRaised += handleComplaintRaised;
+            Receptionist.ComplaintRaised += HandleComplaintRaised;
 
             Principal = new Principal("Principal", principalAddress, 123);
 
