@@ -42,11 +42,11 @@ namespace Util
             }
             catch(ArgumentOutOfRangeException ex)
             {
-                throw new InvalidOperationException("Network delay has failed", ex);
+                throw new InvalidOperationException("\nNetwork delay has failed", ex);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("An error occurred while simulating network delay.", ex);
+                throw new InvalidOperationException("\nAn error occurred while simulating network delay.", ex);
             }
         }
 
@@ -75,11 +75,11 @@ namespace Util
             }
             catch (OverflowException)
             {
-                throw new InvalidOperationException($"Payment operation caused an overflow: balance={balance}, income={income}");
+                throw new InvalidOperationException($"\nPayment operation caused an overflow: balance={balance}, income={income}");
             }
-           catch (Exception ex)
+            catch (Exception ex)
             {
-                throw new InvalidOperationException("An error occurred during the payment operation.", ex);
+                throw new InvalidOperationException("\nAn error occurred during the payment operation.", ex);
             }
         }   
     }

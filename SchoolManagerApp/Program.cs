@@ -33,7 +33,7 @@ namespace SchoolManager
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Failed to collect member attributes", ex);
+                throw new InvalidOperationException("\nFailed to collect member attributes", ex);
             }
         }
 
@@ -71,7 +71,7 @@ namespace SchoolManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while adding the principal: {ex.Message}");
+                Console.WriteLine($"\nError while adding the principal: {ex.Message}");
             }
         }
 
@@ -94,7 +94,7 @@ namespace SchoolManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while adding the student: {ex.Message}");
+                Console.WriteLine($"\nError while adding the student: {ex.Message}");
             }
         }
 
@@ -117,7 +117,7 @@ namespace SchoolManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while adding the teacher: {ex.Message}");
+                Console.WriteLine($"\nError while adding the teacher: {ex.Message}");
             }
         }
 
@@ -153,7 +153,7 @@ namespace SchoolManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in Add operation: {ex.Message}");
+                Console.WriteLine($"\nError in Add operation: {ex.Message}");
             }
         }
 
@@ -261,11 +261,11 @@ namespace SchoolManager
             }
             catch (InvalidOperationException ex)
             {
-                Console.WriteLine($"Payment operation failed: {ex.Message}");
+                Console.WriteLine($"\nPayment operation failed: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error during payment operation: {ex.Message}");
+                Console.WriteLine($"\nUnexpected error during payment operation: {ex.Message}");
             }
         }
 
@@ -363,8 +363,6 @@ namespace SchoolManager
                         break;
                 }
             }
-
-            Console.WriteLine("\n-------------- Bye --------------");
         }
     }
 }

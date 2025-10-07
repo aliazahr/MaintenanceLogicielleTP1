@@ -64,15 +64,15 @@ namespace SchoolManager
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine($"Payment failed for receptionist {Name}. Error: {ex.Message}");
+                Console.WriteLine($"\nPayment failed for receptionist {Name}. Error: {ex.Message}");
             }
             catch (InvalidOperationException ex)
             {
-                Console.WriteLine($"Payment failed for receptionist {Name}. Error: {ex.Message}");
+                Console.WriteLine($"\nPayment failed for receptionist {Name}. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected payment error occurred while paying Receptionist: {Name}. Error: {ex.Message}");
+                Console.WriteLine($"\nUnexpected payment error occurred while paying Receptionist: {Name}. Error: {ex.Message}");
                 throw new InvalidOperationException("Unexpected error during receptionist payment.", ex);
             }
         }

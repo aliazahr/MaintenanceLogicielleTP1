@@ -53,15 +53,15 @@ namespace SchoolManager
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine($"Payment failed for principal {Name}. Error: {ex.Message}");
+                Console.WriteLine($"\nPayment failed for principal {Name}. Error: {ex.Message}");
             }
             catch (InvalidOperationException ex)
             {
-                Console.WriteLine($"Payment failed for principal {Name}. Error: {ex.Message}");
+                Console.WriteLine($"\nPayment failed for principal {Name}. Error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected payment error occurred while paying Principal: {Name}. Error: {ex.Message}");
+                Console.WriteLine($"\nUnexpected payment error occurred while paying Principal: {Name}. Error: {ex.Message}");
                 throw new InvalidOperationException("Unexpected error during principal payment.", ex);
             }
         }

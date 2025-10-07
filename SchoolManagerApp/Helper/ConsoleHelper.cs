@@ -31,7 +31,7 @@ namespace Util
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Failed to read user input", ex);
+                throw new InvalidOperationException("\nFailed to read user input", ex);
 
             }
         }
@@ -76,11 +76,11 @@ namespace Util
                 }
                 catch (RegexMatchTimeoutException)
                 {
-                    System.Console.WriteLine("Name validation timed out. Please enter a simpler name.");
+                    System.Console.WriteLine("\nName validation timed out. Please enter a simpler name.");
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException("Failed to read user input", ex);
+                    throw new InvalidOperationException("\nFailed to read user input", ex);
                 }
             }
         }
@@ -152,7 +152,7 @@ namespace Util
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Failed to read address input", ex);
+                throw new InvalidOperationException("\nFailed to read address input", ex);
             }
         }
 
@@ -160,7 +160,7 @@ namespace Util
         {
             if (string.IsNullOrWhiteSpace(question))
             {
-                throw new ArgumentException("Question cannot be null or whitespace.");
+                throw new ArgumentException("\nQuestion cannot be null or whitespace.");
             }
 
             while (true)
@@ -179,29 +179,29 @@ namespace Util
                                 return result;
                             }
 
-                            System.Console.WriteLine($"Invalid input. Please enter a valid option between {minInput} and {maxInput}.");
+                            System.Console.WriteLine($"\nInvalid input. Please enter a valid option between {minInput} and {maxInput}.");
                         }
                         else
                         {
-                            System.Console.WriteLine("Invalid input. Please enter a valid option.");
+                            System.Console.WriteLine("\nInvalid input. Please enter a valid option.");
                         }
                     }
                     else
                     {
-                        System.Console.WriteLine("Input cannot be empty. Please enter a valid option.");
+                        System.Console.WriteLine("\nInput cannot be empty. Please enter a valid option.");
                     }
                 }
                 catch (FormatException)
                 {
-                    System.Console.WriteLine("Invalid input format. Please enter a valid option.");
+                    System.Console.WriteLine("\nInvalid input format. Please enter a valid option.");
                 }
                 catch (OverflowException)
                 {
-                    System.Console.WriteLine("Input number is too large. Please enter a valid option.");
+                    System.Console.WriteLine("\nInput number is too large. Please enter a valid option.");
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException("Failed to read menu selection", ex);
+                    throw new InvalidOperationException("\nFailed to read menu selection", ex);
                 }
             }
         }
@@ -246,15 +246,15 @@ namespace Util
                 }
                 catch (FormatException)
                 {
-                    System.Console.WriteLine("Invalid input format. Please enter a valid grade.");
+                    System.Console.WriteLine("\nInvalid input format. Please enter a valid grade.");
                 }
                 catch (OverflowException)
                 {
-                    System.Console.WriteLine("Input number is too large. Please enter a valid grade.");
+                    System.Console.WriteLine("\nInput number is too large. Please enter a valid grade.");
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException("Failed to read grade input", ex);
+                    throw new InvalidOperationException("\nFailed to read grade input", ex);
                 }
             }
         }
@@ -301,15 +301,15 @@ namespace Util
                 }
                 catch (FormatException)
                 {
-                    System.Console.WriteLine("Invalid input format. Please enter a valid phone number.");
+                    System.Console.WriteLine("\nInvalid input format. Please enter a valid phone number.");
                 }
                 catch (OverflowException)
                 {
-                    System.Console.WriteLine("Input number is too large. Please enter a valid phone number.");
+                    System.Console.WriteLine("\nInput number is too large. Please enter a valid phone number.");
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException("Failed to read phone number input", ex);
+                    throw new InvalidOperationException("\nFailed to read phone number input", ex);
                 }
             }
         }
