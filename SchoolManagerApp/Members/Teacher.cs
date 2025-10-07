@@ -8,7 +8,7 @@ namespace SchoolManager
         private int income;
         private int balance;
 
-        public Teacher(string name, string address, int phoneNum, string subject = "", int income = 25000)
+        public Teacher(string name, Address? address, int phoneNum, string subject = "", int income = 25000)
         {
             Name = name;
             Address = address;

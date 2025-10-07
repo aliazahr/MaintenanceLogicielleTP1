@@ -5,14 +5,14 @@ namespace SchoolManager
 {
     public class Student : SchoolMember
     {
-        private int grade;
-        public int Grade
+        private double grade;
+        public double Grade
         {
             get { return grade; }
             set { grade = value; }
         }
 
-        public Student(string name = "", string address = "", int phoneNum = 0, int grade = 0)
+        public Student(string name = "", Address address = null, int phoneNum = 0, int grade = 0)
         {
             Name = name;
             Address = address;
