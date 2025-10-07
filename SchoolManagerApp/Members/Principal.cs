@@ -27,9 +27,10 @@ namespace SchoolManager
             Console.WriteLine("Name: {0}, Address: {1}, Phone: {2}", Name, Address, Phone);
         }
 
-        public void Pay()
+        public async Task PayAsync()
         {
-            Util.NetworkDelay.PayEntity("Principal", Name, ref balance, income);
+            balance = await Util.NetworkDelay.PayEntityAsync(balance, income);
+            Console.WriteLine($"\nPaid Principal: {Name}. Total balance: {balance}");
         }
     }
 }

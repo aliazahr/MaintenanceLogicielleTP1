@@ -16,7 +16,7 @@ namespace SchoolManager
     {
         private int income;
         private int balance;
-        public event EventHandler<Complaint> ComplaintRaised;
+        public event EventHandler<Complaint>? ComplaintRaised;
 
         public Receptionist(int income = 10000) 
         {
@@ -38,9 +38,10 @@ namespace SchoolManager
             Console.WriteLine("Name: {0}, Address: {1}, Phone: {2}", Name, Address, Phone);
         }
 
-        public void Pay()
+        public async Task PayAsync()
         {
-            Util.NetworkDelay.PayEntity("Receptionist", Name, ref balance, income);
+            balance = await Util.NetworkDelay.PayEntityAsync(balance, income);
+            Console.WriteLine($"\nPaid Receptionist: {Name}. Total balance: {balance}");
         }
 
         public void HandleComplaint()

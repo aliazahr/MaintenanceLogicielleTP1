@@ -5,31 +5,39 @@ namespace Util
 {
     public class NetworkDelay
     {
-        private const int minDelay = 1000;
-        private const int maxDelay = 5000;
+        private static readonly Random _random = new Random();
+        private static readonly object _lock = new object();
+
+        private const int _minDelay = 1000;
+        private const int _maxDelay = 5000;
 
         public static int MinDelay
         {
-            get { return minDelay; }
+            get { return _minDelay; }
         }
 
         public static int MaxDelay
         {
-            get { return maxDelay; }
+            get { return _maxDelay; }
         }
 
-        static public void SimulateNetworkDelay()
+        static public async Task SimulateNetworkDelayAsync()
         {
-            Random rnd = new Random();
-            Thread.Sleep(rnd.Next(minDelay, maxDelay));
+            int delay;
+            lock (_lock)
+            {
+                delay = _random.Next(_minDelay, _maxDelay);
+            }
+
+            await Task.Delay(delay);
         }
 
-        static public void PayEntity(string entity, string name, ref int balance, int income)
+        static public async Task<int> PayEntityAsync(int balance, int income)
         {
-            SimulateNetworkDelay();
-
-            balance += income;
-            System.Console.WriteLine($"Paid {entity}: {name}. Total balance: {balance}");
+            await SimulateNetworkDelayAsync();
+            
+            int newBalance = balance + income;
+            return newBalance; // Cette méthode ne devrait pas retourner de message
         }
     }
 }

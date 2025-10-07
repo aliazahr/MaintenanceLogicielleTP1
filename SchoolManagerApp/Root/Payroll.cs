@@ -2,6 +2,6 @@
 {
     interface IPayroll
     {
-        void Pay();
+        Task PayAsync(); // Only async method
     }
 }

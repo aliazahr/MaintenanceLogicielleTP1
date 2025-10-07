@@ -183,7 +183,7 @@ namespace SchoolManager
             }
         }
 
-        public static void Pay()
+        public static async Task Pay()
         {
             Console.WriteLine("\nPlease note that the students cannot be paid.");
             int memberType = AcceptMemberType();
@@ -193,23 +193,18 @@ namespace SchoolManager
             switch (memberType)
             {
                 case 1:
-                    Principal.Pay();
+                    await Principal.PayAsync();
                     break;
                 case 2:
-                    List<Task> payments = new List<Task>();
-
-                    foreach (Teacher teacher in Teachers)
+                    var teacherTasks = Teachers.Select(teacher =>
                     {
-                        Task payment = new Task(teacher.Pay);
-                        payments.Add(payment);
-                        payment.Start();
-                    }
+                        return teacher.PayAsync();
+                    }).ToArray();
 
-                    Task.WaitAll(payments.ToArray());
-
+                    await Task.WhenAll(teacherTasks);
                     break;
                 case 4:
-                    Receptionist.Pay();
+                    await Receptionist.PayAsync();
                     break;
                 default:
                     Console.WriteLine("\nInvalid input. Terminating operation.");
