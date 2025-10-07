@@ -6,143 +6,310 @@ namespace Util
     {
         static public string AskQuestion(string question)
         {
-            System.Console.Write(question);
-            return System.Console.ReadLine() ?? string.Empty;
+            try
+            {
+                if (string.IsNullOrWhiteSpace(question))
+                {
+                    throw new ArgumentException("The question cannot be null or empty.");
+                }
+
+                while (true) {
+                    System.Console.Write(question);
+                    string? input = System.Console.ReadLine();
+
+                    if (!string.IsNullOrWhiteSpace(input))
+                    {
+                        return input;
+                    }
+
+                    System.Console.WriteLine("Input cannot be empty. Please enter a valid response.");
+                }
+            }
+            catch (ArgumentException)
+            {
+                throw; // Relance argument exceptions
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to read user input", ex);
+
+            }
         }
 
         static public string AskQuestionName(string question)
         {
+            if (string.IsNullOrWhiteSpace(question))
+            {
+                throw new ArgumentException("Question cannot be null or whitespace.");
+            }
+
             const int minInputLength = 1;
             const int maxInputLength = 100;
             string pattern = @"^[a-zA-ZÀ-ÖØ-öø-ÿ]([a-zA-ZÀ-ÖØ-öø-ÿ\s-]*[a-zA-ZÀ-ÖØ-öø-ÿ])?$"; // Doit commencer et finir avec une lettre, mais peut contenir des accents, espaces, et tirets
 
             while (true)
             {
-                System.Console.Write(question);
-                string? input = System.Console.ReadLine();
-
-                if (!string.IsNullOrWhiteSpace(input) && Regex.IsMatch(input, pattern))
+                try
                 {
-                    if (input.Length >= minInputLength && input.Length <= maxInputLength)
+                    System.Console.Write(question);
+                    string? input = System.Console.ReadLine();
+
+                    if (!string.IsNullOrWhiteSpace(input))
                     {
-                        return input;
+                        if (Regex.IsMatch(input, pattern))
+                        {
+                            if (input.Length >= minInputLength && input.Length <= maxInputLength)
+                            {
+                                return input;
+                            }
+                            System.Console.WriteLine($"Invalid input. Please enter a valid name between the length of {minInputLength} character and {maxInputLength} caracters.");
+                        }
+                        else
+                        {
+                            System.Console.WriteLine("Invalid input. Please enter a valid name.");
+                        }
                     }
-
-                    System.Console.WriteLine($"Invalid input. Please enter a valid name between the length of {minInputLength} character and {maxInputLength} caracters.");
+                    else
+                    {
+                        System.Console.WriteLine("Input cannot be empty. Please enter a name.");
+                    }
                 }
-
-                System.Console.WriteLine("Invalid input. Please enter a valid name.");
+                catch (RegexMatchTimeoutException)
+                {
+                    System.Console.WriteLine("Name validation timed out. Please enter a simpler name.");
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("Failed to read user input", ex);
+                }
             }
         }
 
         static public SchoolManager.Address AskQuestionAddress(string question)
         {
-            System.Console.WriteLine($"\n{question}");
-
-            // Street number input
-            System.Console.Write("Enter street number: ");
-            int streetNumber;
-            while (!int.TryParse(System.Console.ReadLine(), out streetNumber) || streetNumber <= 0)
+            try
             {
-                System.Console.Write("Invalid input. Please enter a valid street number: ");
+                if (string.IsNullOrWhiteSpace(question))
+                {
+                    throw new ArgumentException("Question cannot be null or whitespace.");
+                }
+
+                System.Console.WriteLine($"\n{question}");
+
+                // Street number input
+                System.Console.Write("Enter street number: ");
+                int streetNumber;
+
+                while (true)
+                {
+                    try
+                    {
+                        string? input = System.Console.ReadLine();
+                        if (int.TryParse(input, out streetNumber) && streetNumber > 0)
+                        {
+                            break;
+                        }
+                        System.Console.Write("Invalid input. Please enter a valid street number: ");
+                    }
+                    catch (OverflowException)
+                    {
+                        System.Console.Write("Number too large. Please enter a valid street number: ");
+                    }
+                }
+
+                while (!int.TryParse(System.Console.ReadLine(), out streetNumber) || streetNumber <= 0)
+                {
+                    System.Console.Write("Invalid input. Please enter a valid street number: ");
+                }
+
+                // Street name input
+                string streetName = AskQuestionName("Enter street name: ");
+
+                // City input
+                string city = AskQuestionName("Enter city: ");
+
+                // Province input
+                string province = AskQuestionName("Enter province: ");
+
+                // Postal code input
+                string pattern = @"^[a-zA-Z0-9\s]+$"; // Accepte les lettres, les chiffres et les espaces
+                System.Console.Write("Enter postal code: ");
+                string? postalCode = System.Console.ReadLine();
+                while (string.IsNullOrWhiteSpace(postalCode) || !Regex.IsMatch(postalCode, pattern))
+                {
+                    System.Console.Write("Invalid input. Please enter a postal code: ");
+                    postalCode = System.Console.ReadLine();
+                }
+
+                // Country input
+                string country = AskQuestionName("Enter country: ");
+
+                return new SchoolManager.Address(streetNumber, streetName, city, province, postalCode, country);
             }
-
-            // Street name input
-            string streetName = AskQuestionName("Enter street name: ");
-
-            // City input
-            string city = AskQuestionName("Enter city: ");
-
-            // Province input
-            string province = AskQuestionName("Enter province: ");
-
-            // Postal code input
-            string pattern = @"^[a-zA-Z0-9\s]+$"; // Accepte les lettres, les chiffres et les espaces
-            System.Console.Write("Enter postal code: ");
-            string? postalCode = System.Console.ReadLine();
-            while (string.IsNullOrWhiteSpace(postalCode) || !Regex.IsMatch(postalCode, pattern))
+            catch (ArgumentException)
             {
-                System.Console.Write("Invalid input. Please enter a postal code: ");
-                postalCode = System.Console.ReadLine();
+                throw;
             }
-
-            // Country input
-            string country = AskQuestionName("Enter country: ");
-
-            return new SchoolManager.Address(streetNumber, streetName, city, province, postalCode, country);
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to read address input", ex);
+            }
         }
 
         static public int AskQuestionMenu(string question, int minInput, int maxInput)
         {
+            if (string.IsNullOrWhiteSpace(question))
+            {
+                throw new ArgumentException("Question cannot be null or whitespace.");
+            }
+
             while (true)
             {
-                System.Console.Write(question);
-                string? input = System.Console.ReadLine();
-
-                if (!string.IsNullOrWhiteSpace(input) && int.TryParse(input, out int result))
+                try
                 {
-                    if (result >= minInput && result <= maxInput)
+                    System.Console.Write(question);
+                    string? input = System.Console.ReadLine();
+
+                    if (!string.IsNullOrWhiteSpace(input))
                     {
-                        return result;
-                    }
+                        if (int.TryParse(input, out int result))
+                        {
+                            if (result >= minInput && result <= maxInput)
+                            {
+                                return result;
+                            }
 
-                    System.Console.WriteLine($"Invalid input. Please enter a valid option between {minInput} and {maxInput}.");
+                            System.Console.WriteLine($"Invalid input. Please enter a valid option between {minInput} and {maxInput}.");
+                        }
+                        else
+                        {
+                            System.Console.WriteLine("Invalid input. Please enter a valid option.");
+                        }
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Input cannot be empty. Please enter a valid option.");
+                    }
                 }
-                else
+                catch (FormatException)
                 {
-                    System.Console.WriteLine("Invalid input. Please enter a valid option.");
+                    System.Console.WriteLine("Invalid input format. Please enter a valid option.");
+                }
+                catch (OverflowException)
+                {
+                    System.Console.WriteLine("Input number is too large. Please enter a valid option.");
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("Failed to read menu selection", ex);
                 }
             }
         }
 
         static public double AskQuestionGrade(string question)
         {
+            if (string.IsNullOrWhiteSpace(question))
+            {
+                throw new ArgumentException("Question cannot be null or whitespace.");
+            }
+
             const int minGrade = 0;
             const int maxGrade = 100;
 
             while (true)
             {
-                System.Console.Write(question);
-                string? input = System.Console.ReadLine();
-
-                if (!string.IsNullOrWhiteSpace(input) && double.TryParse(input, out double result))
+                try
                 {
-                    if (result >= minGrade && result <= maxGrade)
+                    System.Console.Write(question);
+                    string? input = System.Console.ReadLine();
+
+                    if (!string.IsNullOrWhiteSpace(input))
                     {
-                        return result;
-                    }
+                        if (double.TryParse(input, out double result))
+                        {
+                            if (result >= minGrade && result <= maxGrade)
+                            {
+                                return result;
+                            }
 
-                    System.Console.WriteLine($"Invalid input. Please enter a grade between {minGrade} and {maxGrade}.");
+                            System.Console.WriteLine($"Invalid input. Please enter a grade between {minGrade} and {maxGrade}.");
+                        }
+                        else
+                        {
+                            System.Console.WriteLine("Invalid input. Please enter a valid grade.");
+                        }
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Input cannot be empty. Please enter a valid grade.");
+                    }
                 }
-                else
+                catch (FormatException)
                 {
-                    System.Console.WriteLine("Invalid input. Please enter a valid grade.");
+                    System.Console.WriteLine("Invalid input format. Please enter a valid grade.");
+                }
+                catch (OverflowException)
+                {
+                    System.Console.WriteLine("Input number is too large. Please enter a valid grade.");
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("Failed to read grade input", ex);
                 }
             }
         }
 
         static public int AskQuestionPhoneNumber(string question)
         {
+            if (string.IsNullOrWhiteSpace(question))
+            {
+                throw new ArgumentException("Question cannot be null or whitespace.");
+            }
+
             const int minPhone = 1000000000; // 10 digits minimum
             const int maxPhone = int.MaxValue; // Value maximum pour un integer
 
             while (true)
             {
-                System.Console.Write(question);
-                string? input = System.Console.ReadLine();
-
-                if (!string.IsNullOrWhiteSpace(input) && int.TryParse(input, out int result))
+                try
                 {
-                    if (result >= minPhone && result <= maxPhone)
+                    System.Console.Write(question);
+                    string? input = System.Console.ReadLine();
+
+                    if (!string.IsNullOrWhiteSpace(input))
                     {
-                        return result;
-                    }
+                        string cleanInput = input.Replace(" ", "").Replace("-", "").Replace("(", "").Replace(")", ""); // Enlève les espaces, tirets et parenthèses
 
-                    System.Console.WriteLine($"Invalid input. Please enter a valid phone number (at least 10 digits).");
+                        if (int.TryParse(input, out int result))
+                        {
+                            if (result >= minPhone && result <= maxPhone)
+                            {
+                                return result;
+                            }
+
+                            System.Console.WriteLine($"Invalid input. Please enter a valid phone number (at least 10 digits).");
+                        }
+                        else
+                        {
+                            System.Console.WriteLine("Invalid input. Please enter a valid phone number.");
+                        }
+                    }
+                    else
+                    {
+                        System.Console.WriteLine("Input cannot be empty. Please enter a valid phone number.");
+                    }
                 }
-                else
+                catch (FormatException)
                 {
-                    System.Console.WriteLine("Invalid input. Please enter a valid phone number.");
+                    System.Console.WriteLine("Invalid input format. Please enter a valid phone number.");
+                }
+                catch (OverflowException)
+                {
+                    System.Console.WriteLine("Input number is too large. Please enter a valid phone number.");
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException("Failed to read phone number input", ex);
                 }
             }
         }
