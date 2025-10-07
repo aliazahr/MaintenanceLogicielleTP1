@@ -21,23 +21,66 @@ namespace Util
             get { return _maxDelay; }
         }
 
+        // Async pour mieux performance quand plusieurs paiements se font en même temps
         static public async Task SimulateNetworkDelayAsync()
         {
-            int delay;
-            lock (_lock)
+            try
             {
-                delay = _random.Next(_minDelay, _maxDelay);
-            }
+                int delay;
+                lock (_lock)
+                {
+                    delay = _random.Next(_minDelay, _maxDelay);
+                }
 
-            await Task.Delay(delay);
+                // Protéger contre le comportement inattendu du Random
+                if (delay < 0 || delay > 30000) // 30 seconds max
+                {
+                    throw new InvalidOperationException($"Generated delay is out of acceptable range: {delay} ms");
+                }
+
+                await Task.Delay(delay);
+            }
+            catch(ArgumentOutOfRangeException ex)
+            {
+                throw new InvalidOperationException("Network delay has failed", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("An error occurred while simulating network delay.", ex);
+            }
         }
 
         static public async Task<int> PayEntityAsync(int balance, int income)
         {
-            await SimulateNetworkDelayAsync();
-            
-            int newBalance = balance + income;
-            return newBalance; // Cette méthode ne devrait pas retourner de message
-        }
+            if (balance < 0 || income < 0)
+            {
+                throw new ArgumentException("Balance and income must be non-negative.");
+            }
+
+            if (balance > int.MaxValue - income)
+            {
+                throw new OverflowException("Adding income would cause overflow.");
+            }
+
+            try
+            {
+                await SimulateNetworkDelayAsync();
+
+                // Pour éviter integer overflow: https://stackoverflow.com/questions/2954970/best-way-to-handle-integer-overflow-in-c
+                checked
+                {
+                    int newBalance = balance + income;
+                    return newBalance; // Cette méthode ne devrait pas retourner de message
+                }
+            }
+            catch (OverflowException)
+            {
+                throw new InvalidOperationException($"Payment operation caused an overflow: balance={balance}, income={income}");
+            }
+           catch (Exception ex)
+            {
+                throw new InvalidOperationException("An error occurred during the payment operation.", ex);
+            }
+        }   
     }
 }
