@@ -21,73 +21,141 @@ namespace SchoolManager
 
         public static SchoolMember AcceptAttributes()
         {
-            SchoolMember member = new SchoolMember();
-            member.Name = Util.Console.AskQuestion("Enter name: ");
-            member.Address = Util.Console.AskQuestion("Enter address: ");
-            member.Phone = Util.Console.AskQuestionInt("Enter phone number: ");
+            try
+            {
+                SchoolMember member = new SchoolMember();
+                member.Name = Util.Console.AskQuestionName("Enter name: ");
+                member.Address = Util.Console.AskQuestionAddress("Enter address: ");
+                member.Phone = Util.Console.AskQuestionPhoneNumber("Enter phone number: ");
 
-            return member;
+                return member;
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to collect member attributes", ex);
+            }
         }
 
-        private static int acceptChoices()
+        private static int AcceptChoices()
         {
-            return Util.Console.AskQuestionInt("\n1. Add\n2. Display\n3. Pay\n4. Raise Complaint\n5. Student Performance\nPlease enter the member type: ");
+            const int minInput = 1;
+            const int maxInput = 5;
+            Console.WriteLine("\n====== Menu ======");
+            return Util.Console.AskQuestionMenu("1. Add\n2. Display\n3. Pay\n4. Raise Complaint\n5. Student Performance\nPlease enter the member type: ", minInput, maxInput);
         }
 
-        private static int acceptMemberType()
+        private static int AcceptMemberType()
         {
-            int x = Util.Console.AskQuestionInt("\n1. Principal\n2. Teacher\n3. Student\n4. Receptionist\nPlease enter the member type: ");
+            const int minInput = 1;
+            const int maxInput = 4;
+            int x = Util.Console.AskQuestionMenu("\n1. Principal\n2. Teacher\n3. Student\n4. Receptionist\nPlease enter the member type: ", minInput, maxInput);
+
             return Enum.IsDefined(typeof(SchoolMemberType), x) ? x : -1;
         }
 
         public static void AddPrincpal()
         {
-            SchoolMember member = AcceptAttributes();
-            Principal.Name = member.Name;
-            Principal.Address = member.Address;
-            Principal.Phone = member.Phone;
+            try
+            {
+                SchoolMember member = AcceptAttributes();
+                if (member == null)
+                {
+                    throw new InvalidOperationException("Failed to create principal with provided attributes");
+                }
+
+                Principal.Name = member.Name;
+                Principal.Address = member.Address;
+                Principal.Phone = member.Phone;
+                Console.WriteLine($"\n--- Principal '{Principal.Name}' has been successfully added! ---");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while adding the principal: {ex.Message}");
+            }
         }
 
-        private static void addStudent()
+        private static void AddStudent()
         {
-            SchoolMember member = AcceptAttributes();
-            Student newStudent = new Student(member.Name, member.Address, member.Phone);
-            newStudent.Grade = Util.Console.AskQuestionInt("Enter grade: ");
+            try
+            {
+                SchoolMember member = AcceptAttributes();
+                if (member == null)
+                {
+                    Console.WriteLine("Failed to collect student information. Operation cancelled.");
+                }
 
-            Students.Add(newStudent);
+                Student newStudent = new Student(member.Name, member.Address, member.Phone);
+                newStudent.Grade = Util.Console.AskQuestionGrade("Enter grade: ");
+
+                Students.Add(newStudent);
+                Console.WriteLine($"\n=== Student '{newStudent.Name}' has been successfully added! ===");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while adding the student: {ex.Message}");
+            }
         }
 
-        private static void addTeacher()
+        private static void AddTeacher()
         {
-            SchoolMember member = AcceptAttributes();
-            Teacher newTeacher = new Teacher(member.Name, member.Address, member.Phone);
-            newTeacher.Subject = Util.Console.AskQuestion("Enter subject: ");
+            try
+            {
+                SchoolMember member = AcceptAttributes();
+                if (member == null)
+                {
+                    Console.WriteLine("Failed to collect teacher information. Operation cancelled.");
+                    return;
+                }
 
-            Teachers.Add(newTeacher);
+                Teacher newTeacher = new Teacher(member.Name, member.Address, member.Phone);
+                newTeacher.Subject = Util.Console.AskQuestionName("Enter subject: ");
+
+                Teachers.Add(newTeacher);
+                Console.WriteLine($"\n=== Teacher '{newTeacher.Name}' has been successfully added! ===");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while adding the teacher: {ex.Message}");
+            }
         }
 
         public static void Add()
         {
-            Console.WriteLine("\nPlease note that the Principal/Receptionist details cannot be added or modified now.");
-            int memberType = acceptMemberType();
-
-            switch (memberType)
+            try
             {
-                case 2:
-                    addTeacher();
-                    break;
-                case 3:
-                    addStudent();
-                    break;
-                default:
-                    Console.WriteLine("Invalid input. Terminating operation.");
-                    break;
+                Console.WriteLine("\n--- Add School Member ---");
+                Console.WriteLine("\nPlease note that the Principal/Receptionist details cannot be added or modified now.");
+                int memberType = AcceptMemberType();
+
+                while (memberType == 1 || memberType == 4)
+                {
+                    Console.WriteLine("\nPrincipals and receptionists cannot be added. Please select a different member type.");
+                    memberType = AcceptMemberType();
+                }
+
+                switch (memberType)
+                {
+                    case 2:
+                        AddTeacher();
+                        break;
+                    case 3:
+                        AddStudent();
+                        break;
+                    default:
+                        Console.WriteLine("\nInvalid input. Terminating operation.");
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in Add operation: {ex.Message}");
             }
         }
 
-        private static void display()
+        private static void Display()
         {
-            int memberType = acceptMemberType();
+            Console.WriteLine("\n--- Display School Members ---");
+            int memberType = AcceptMemberType();
 
             switch (memberType)
             {
@@ -110,7 +178,7 @@ namespace SchoolManager
                     Receptionist.Display();
                     break;
                 default:
-                    Console.WriteLine("Invalid input. Terminating operation.");
+                    Console.WriteLine("\nInvalid input. Terminating operation.");
                     break;
             }
         }
@@ -118,7 +186,7 @@ namespace SchoolManager
         public static void Pay()
         {
             Console.WriteLine("\nPlease note that the students cannot be paid.");
-            int memberType = acceptMemberType();
+            int memberType = AcceptMemberType();
 
             Console.WriteLine("\nPayments in progress...");
 
@@ -144,7 +212,7 @@ namespace SchoolManager
                     Receptionist.Pay();
                     break;
                 default:
-                    Console.WriteLine("Invalid input. Terminating operation.");
+                    Console.WriteLine("\nInvalid input. Terminating operation.");
                     break;
             }
 
@@ -163,48 +231,53 @@ namespace SchoolManager
             Console.WriteLine($"Complaint Raised: {complaint.ComplaintRaised}\n---------");
         }
 
-        private static async Task showPerformance()
+        private static async Task ShowPerformance()
         {
             double average = await Task.Run(() => Student.averageGrade(Students));
             Console.WriteLine($"The student average performance is: {average}");
         }
 
-        private static void addData()
+        private static void AddData()
         {
-            Receptionist = new Receptionist("Receptionist", "address", 123);
+            // Adresse d'exemple
+            Address receptionistAddress = new Address(123, "Boulevard Rosemont", "Montreal", "QC", "A1A 1A1", "Canada");
+            Address principalAddress = new Address(456, "Rue Gauchetiere", "Montreal", "QC", "B2B 2B2", "Canada");
+            
+            Receptionist = new Receptionist("Receptionist", receptionistAddress, 123);
             Receptionist.ComplaintRaised += handleComplaintRaised;
 
-            Principal = new Principal("Principal", "address", 123);
+            Principal = new Principal("Principal", principalAddress, 123);
 
             for (int i = 0; i < 10; i++)
             {
-                Students.Add(new Student(i.ToString(), i.ToString(), i, i));
-                Teachers.Add(new Teacher(i.ToString(), i.ToString(), i));
+                // Create sample addresses for each student and teacher
+                Address studentAddress = new Address(i + 100, $"Street{i}", $"City{i}", "QC", $"A{i}B {i}C{i}", "Canada");
+                Address teacherAddress = new Address(i + 200, $"Avenue{i}", $"City{i}", "QC", $"D{i}E {i}F{i}", "Canada");
+
+                Students.Add(new Student(i.ToString(), studentAddress, i, i));
+                Teachers.Add(new Teacher(i.ToString(), teacherAddress, i));
             }
         }
 
         public static async Task Main(string[] args)
         {
             // Just for manual testing purposes.
-            addData();
+            AddData();
 
             Console.WriteLine("-------------- Welcome ---------------\n");
-
-            //Console.WriteLine("Please enter the Princpals information.");
-            //AddPrincpal();
 
             bool flag = true;
             while (flag)
             {
 
-                int choice = acceptChoices();
+                int choice = AcceptChoices();
                 switch (choice)
                 {
                     case 1:
                         Add();
                         break;
                     case 2:
-                        display();
+                        Display();
                         break;
                     case 3:
                         Pay();
@@ -213,7 +286,7 @@ namespace SchoolManager
                         RaiseComplaint();
                         break;
                     case 5:
-                        await showPerformance();
+                        await ShowPerformance();
                         break;
                     default:
                         flag = false;

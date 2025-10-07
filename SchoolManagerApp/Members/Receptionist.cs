@@ -24,7 +24,7 @@ namespace SchoolManager
             balance = 0;
         }
 
-        public Receptionist(string name, string address, int phoneNum, int income = 10000)
+        public Receptionist(string name, Address? address, int phoneNum, int income = 10000)
         {
             Name = name;
             Address = address;

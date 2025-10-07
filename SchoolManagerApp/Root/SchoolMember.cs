@@ -3,10 +3,10 @@
     public class SchoolMember
     {
         public string Name;
-        public string Address;
+        public Address Address;
         private int phone;
 
-        public SchoolMember(string name = "", string address = "", int phone = 0)
+        public SchoolMember(string name = "", Address address = null, int phone = 0)
         {
             Name = name;
             Address = address;
