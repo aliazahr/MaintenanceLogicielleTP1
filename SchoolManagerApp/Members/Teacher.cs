@@ -11,7 +11,7 @@ namespace SchoolManager
         public Teacher(string name, Address? address, int phoneNum, string subject = "", int income = 25000)
         {
             Name = name;
-            Address = address;
+            Address = address!;
             Phone = phoneNum;
             Subject = subject;
             this.income = income;

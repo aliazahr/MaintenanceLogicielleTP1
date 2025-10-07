@@ -12,10 +12,10 @@ namespace SchoolManager
             set { grade = value; }
         }
 
-        public Student(string name = "", Address address = null, int phoneNum = 0, int grade = 0)
+        public Student(string name = "", Address? address = null, int phoneNum = 0, int grade = 0)
         {
             Name = name;
-            Address = address;
+            Address = address!;
             Phone = phoneNum;
             this.grade = grade;
         }

@@ -82,6 +82,7 @@ namespace SchoolManager
                 if (member == null)
                 {
                     Console.WriteLine("Failed to collect student information. Operation cancelled.");
+                    return;
                 }
 
                 Student newStudent = new Student(member.Name, member.Address, member.Phone);
@@ -185,8 +186,15 @@ namespace SchoolManager
 
         public static async Task Pay()
         {
+            Console.WriteLine("\n--- Pay School Members ---");
             Console.WriteLine("\nPlease note that the students cannot be paid.");
             int memberType = AcceptMemberType();
+
+            while (memberType == 3)
+            {
+                Console.WriteLine("\nStudents cannot be paid. Please select a different member type.");
+                memberType = AcceptMemberType();
+            }
 
             Console.WriteLine("\nPayments in progress...");
 
@@ -211,7 +219,7 @@ namespace SchoolManager
                     break;
             }
 
-            Console.WriteLine("Payments completed.\n");
+            Console.WriteLine("\nPayments completed.\n");
         }
 
         public static void RaiseComplaint()
@@ -219,7 +227,7 @@ namespace SchoolManager
             Receptionist.HandleComplaint();
         }
 
-        private static void handleComplaintRaised(object sender, Complaint complaint)
+        private static void handleComplaintRaised(object? sender, Complaint complaint)
         {
             Console.WriteLine("\nThis is a confirmation that we received your complaint. The details are as follows:");
             Console.WriteLine($"---------\nComplaint Time: {complaint.ComplaintTime.ToLongDateString()}, {complaint.ComplaintTime.ToLongTimeString()}");
@@ -275,7 +283,7 @@ namespace SchoolManager
                         Display();
                         break;
                     case 3:
-                        Pay();
+                        await Pay();
                         break;
                     case 4:
                         RaiseComplaint();

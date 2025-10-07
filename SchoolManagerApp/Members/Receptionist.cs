@@ -9,7 +9,7 @@ namespace SchoolManager
     public class Complaint : EventArgs
     {
         public DateTime ComplaintTime { get; set; }
-        public string ComplaintRaised { get; set; }
+        public string ComplaintRaised { get; set; } = string.Empty;
     }
 
     public class Receptionist : SchoolMember, IPayroll
@@ -27,7 +27,7 @@ namespace SchoolManager
         public Receptionist(string name, Address? address, int phoneNum, int income = 10000)
         {
             Name = name;
-            Address = address;
+            Address = address!;
             Phone = phoneNum;
             this.income = income;
             balance = 0;

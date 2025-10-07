@@ -16,7 +16,7 @@ namespace SchoolManager
         public Principal(string name, Address? address, int phoneNum, int income = 50000)
         {
             Name = name;
-            Address = address;
+            Address = address!;
             Phone = phoneNum;
             this.income = income;
             balance = 0;
