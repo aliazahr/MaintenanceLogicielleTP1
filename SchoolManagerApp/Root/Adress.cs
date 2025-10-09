@@ -2,26 +2,26 @@ namespace SchoolManager
 {
     public class Address
     {
-        public int streetNumber { get; set; }
-        public string streetName { get; set; }
-        public string city { get; set; }
-        public string province { get; set; }
-        public string postalCode { get; set; }
-        public string country { get; set; }
+        public int StreetNumber { get; set; }
+        public string StreetName { get; set; }
+        public string City { get; set; }
+        public string Province { get; set; }
+        public string PostalCode { get; set; }
+        public string Country { get; set; }
 
         public Address(int streetNumber, string streetName, string city, string province, string postalCode, string country)
         {
-            this.streetNumber = streetNumber;
-            this.streetName = streetName;
-            this.city = city;
-            this.province = province;
-            this.postalCode = postalCode;
-            this.country = country;
+            this.StreetNumber = streetNumber;
+            this.StreetName = streetName;
+            this.City = city;
+            this.Province = province;
+            this.PostalCode = postalCode;
+            this.Country = country;
         }
 
         public override string ToString()
         {
-            return $"{streetNumber} {streetName}, {city}, {province}, {postalCode}, {country}";
+            return $"{StreetNumber} {StreetName}, {City}, {Province}, {PostalCode}, {Country}";
         }
     }
 }
