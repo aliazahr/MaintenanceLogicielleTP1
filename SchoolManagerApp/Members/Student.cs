@@ -15,7 +15,7 @@ namespace SchoolManager
         public Student(string name = "", Address? address = null, int phoneNum = 0, int grade = 0)
         {
             Name = name;
-            Address = address!;
+            Address = address  ?? throw new ArgumentNullException(nameof(address));
             Phone = phoneNum;
             this.grade = grade;
         }

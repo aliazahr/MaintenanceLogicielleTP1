@@ -27,7 +27,7 @@ namespace SchoolManager
         public Receptionist(string name, Address? address, int phoneNum, int income = 10000)
         {
             Name = name;
-            Address = address!;
+            Address = address  ?? throw new ArgumentNullException(nameof(address));
             Phone = phoneNum;
             this.income = income;
             balance = 0;
