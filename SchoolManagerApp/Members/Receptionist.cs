@@ -33,6 +33,16 @@ namespace SchoolManager
             balance = 0;
         }
 
+        public int GetBalance()
+        {
+            return balance;
+        }
+
+        public void ResetBalance(int balance)
+        {
+            this.balance = balance;
+        }
+
         public void Display()
         {
             Console.WriteLine("Name: {0}, Address: {1}, Phone: {2}", Name, Address, Phone);
@@ -77,11 +87,11 @@ namespace SchoolManager
             }
         }
 
-        public void HandleComplaint()
+        public void HandleComplaint(string complaintText)
         {
             Complaint complaint = new Complaint();
             complaint.ComplaintTime = DateTime.Now;
-            complaint.ComplaintRaised = Util.Console.AskQuestion("Please enter your Complaint: ");
+            complaint.ComplaintRaised = complaintText;
 
             ComplaintRaised?.Invoke(this, complaint);
         }

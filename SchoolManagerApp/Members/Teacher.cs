@@ -18,6 +18,16 @@ namespace SchoolManager
             balance = 0;
         }
 
+        public int GetBalance()
+        {
+            return balance;
+        }
+
+        public void ResetBalance(int balance)
+        {
+            this.balance = balance;
+        }
+
         public void display()
         {
             Console.WriteLine("Name: {0}, Address: {1}, Phone: {2}, Subject: {3}", Name, Address, Phone, Subject);

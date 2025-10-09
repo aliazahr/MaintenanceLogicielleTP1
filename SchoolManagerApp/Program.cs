@@ -40,9 +40,9 @@ namespace SchoolManager
         private static int AcceptChoices()
         {
             const int minInput = 1;
-            const int maxInput = 6;
+            const int maxInput = 7;
             Console.WriteLine("\n====== Menu ======");
-            return Util.Console.AskQuestionMenu("1. Add\n2. Display\n3. Pay\n4. Raise Complaint\n5. Student Performance\n6. Exit\nPlease enter your desired option: ", minInput, maxInput);
+            return Util.Console.AskQuestionMenu("1. Add\n2. Display\n3. Pay\n4. Raise Complaint\n5. Student Performance\n6. Undo last action\n7. Exit\nPlease enter your desired option: ", minInput, maxInput);
         }
 
         private static int AcceptMemberType()
@@ -52,6 +52,12 @@ namespace SchoolManager
             int x = Util.Console.AskQuestionMenu("\n1. Principal\n2. Teacher\n3. Student\n4. Receptionist\n5. Cancel\nPlease enter the member type: ", minInput, maxInput);
 
             return Enum.IsDefined(typeof(SchoolMemberType), x) ? x : -1;
+        }
+
+        public static void UndoLastAction()
+        {
+            Console.WriteLine("\n--- Undo Last Action ---");
+            UndoManager.UndoLastAction();
         }
 
         public static void AddPrincpal()
@@ -89,7 +95,15 @@ namespace SchoolManager
                 Student newStudent = new Student(member.Name, member.Address, member.Phone);
                 newStudent.Grade = Util.Console.AskQuestionGrade("Enter grade: ");
 
-                Students.Add(newStudent);
+                // Enregistrer l'action d'ajout pour pouvoir l'annuler plus tard
+                var action = new AddStudentAction(Students, newStudent);
+
+                // Exécuter l'action et l'enregistrer dans le UndoManager
+                action.Execute();
+
+                // Pousser l'action dans la stack
+                UndoManager.RecordAction(action);
+
                 Console.WriteLine($"\n=== Student '{newStudent.Name}' has been successfully added! ===");
             }
             catch (Exception ex)
@@ -112,7 +126,10 @@ namespace SchoolManager
                 Teacher newTeacher = new Teacher(member.Name, member.Address, member.Phone);
                 newTeacher.Subject = Util.Console.AskQuestionName("Enter subject: ");
 
-                Teachers.Add(newTeacher);
+                var action = new AddTeacherAction(Teachers, newTeacher);
+                action.Execute();
+                UndoManager.RecordAction(action);
+
                 Console.WriteLine($"\n=== Teacher '{newTeacher.Name}' has been successfully added! ===");
             }
             catch (Exception ex)
@@ -223,7 +240,10 @@ namespace SchoolManager
                             return;
                         }
 
+                        int previousBalancePrincipal = Principal.GetBalance();
                         await Principal.PayAsync();
+                        UndoManager.RecordAction(new PaymentAction(Principal, previousBalancePrincipal, $"Payment to Principal: {Principal.Name}"));
+
                         break;
                     case 2:
                         if (Teachers.Count == 0 || Teachers == null)
@@ -232,6 +252,14 @@ namespace SchoolManager
                             return;
                         }
 
+                        // Sauvegarder les balances précédents des enseignants avant le paiement
+                        var teacherBalances = new Dictionary<Teacher, int>();
+                        foreach (var teacher in Teachers)
+                        {
+                            teacherBalances[teacher] = teacher.GetBalance();
+                        }
+
+                        // Paiement des enseignants
                         var teacherTasks = Teachers.Select(teacher =>
                         {
                             if (teacher == null)
@@ -242,6 +270,10 @@ namespace SchoolManager
                         }).ToArray();
 
                         await Task.WhenAll(teacherTasks);
+
+                        // Enregistrer l'action de paiement des enseignants pour pouvoir l'annuler plus tard
+                        UndoManager.RecordAction(new PayTeachersAction(Teachers, teacherBalances));
+
                         break;
                     case 4:
                         if (Receptionist == null)
@@ -250,7 +282,10 @@ namespace SchoolManager
                             return;
                         }
 
+                        int previousBalanceReceptionist = Receptionist.GetBalance();
                         await Receptionist.PayAsync();
+                        UndoManager.RecordAction(new PaymentAction(Receptionist, previousBalanceReceptionist, $"Payment to Receptionist: {Receptionist.Name}"));
+
                         break;
                     default:
                         Console.WriteLine("\nInvalid input. Terminating operation.");
@@ -279,7 +314,12 @@ namespace SchoolManager
             switch (choice)
             {
                 case 1:
-                    Receptionist.HandleComplaint();
+                    string complaintText = Util.Console.AskQuestion("Enter your complaint: ");
+                    var action = new ComplaintAction(complaintText);
+                    action.Execute();
+                    UndoManager.RecordAction(action);
+
+                    Receptionist.HandleComplaint(complaintText);
                     break;
                 case 2:
                     Console.WriteLine("\nOperation cancelled.");
@@ -355,6 +395,9 @@ namespace SchoolManager
                         await ShowPerformance();
                         break;
                     case 6:
+                        UndoLastAction();
+                        break;
+                    case 7:
                         Console.WriteLine("\n-------------- Bye --------------");
                         Environment.Exit(0);
                         break;
