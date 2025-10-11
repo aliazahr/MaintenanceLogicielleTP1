@@ -13,17 +13,6 @@ namespace SchoolManager
             Grade = grade;
         }
 
-        public static double AverageGrade(List<Student> students)
-        {
-            double avg = 0;
-            foreach (Student student in students)
-            {
-                avg += student.Grade;
-            }
-
-            return avg / students.Count;
-        }
-
         public void Display()
         {
             Console.WriteLine("Name: {0}, Address: {1}, Phone: {2}, Grade: {3}", Name, Address, Phone, Grade);
