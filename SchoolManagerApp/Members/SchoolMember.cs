@@ -3,32 +3,50 @@
     public class SchoolMember
     {
         private string _name;
-        private Address? _address;
-        private string _phone;
+        private Address _address;
+        private string _phoneNumber;
 
-        public SchoolMember(string name = "", Address? address = null, string phone = "")
+        public SchoolMember(string name, Address address, string phoneNumber)
         {
             Name = name;
             Address = address;
-            Phone = phone;
+            PhoneNumber = phoneNumber;
         }
 
         public string Name
         {
             get => _name;
-            set => _name = value;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Name cannot be empty.");
+                _name = value;
+            }
         }
 
-        public Address? Address
+        public Address Address
         {
             get => _address;
-            set => _address = value;
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("Address cannot be null.");
+                _address = value;
+            }
         }
 
-        public string Phone
+        public string PhoneNumber
         {
-            get => _phone;
-            set => _phone = value;
+            get => _phoneNumber;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentException("Phone cannot be empty.");
+                if (value.Length < 8)
+                    throw new ArgumentException("Phone number seems to be short");
+
+                _phoneNumber = value;
+            }
         }
     }
-} 
+}
