@@ -5,9 +5,9 @@ namespace SchoolManager
 {
     public class Student : SchoolMember
     {
-        private double _grade;
+        private double? _grade;
 
-        public Student(string name, Address address, string phoneNumber, double grade)
+        public Student(string name, Address address, string phoneNumber, double? grade = null)
             : base(name, address, phoneNumber)
         {
             Grade = grade;
