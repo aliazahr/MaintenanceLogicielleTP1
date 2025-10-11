@@ -16,10 +16,20 @@ namespace SchoolManager
         public Principal(string name, Address? address, int phoneNum, int income = 50000)
         {
             Name = name;
-            Address = address;
+            Address = address  ?? throw new ArgumentNullException(nameof(address));
             Phone = phoneNum;
             this.income = income;
             balance = 0;
+        }
+
+        public int GetBalance()
+        {
+            return balance;
+        }
+
+        public void ResetBalance(int balance)
+        {
+            this.balance = balance;
         }
 
         public void display()
@@ -27,9 +37,43 @@ namespace SchoolManager
             Console.WriteLine("Name: {0}, Address: {1}, Phone: {2}", Name, Address, Phone);
         }
 
-        public void Pay()
+        public async Task PayAsync()
         {
-            Util.NetworkDelay.PayEntity("Principal", Name, ref balance, income);
+            try
+            {
+                if (income < 0)
+                {
+                    throw new InvalidOperationException("Principal income cannot be negative.");
+                }
+
+                if (balance < 0)
+                {
+                    throw new InvalidOperationException("Principal balance cannot be negative before payment.");
+                }
+
+                int oldBalance = balance;
+                balance = await Util.NetworkDelay.PayEntityAsync(balance, income);
+
+                if (balance < oldBalance)
+                {
+                    throw new InvalidOperationException("Balance decreased after payment.");
+                }
+
+                Console.WriteLine($"\nPaid Principal: {Name}. Total balance: {balance}");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"\nPayment failed for principal {Name}. Error: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"\nPayment failed for principal {Name}. Error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"\nUnexpected payment error occurred while paying Principal: {Name}. Error: {ex.Message}");
+                throw new InvalidOperationException("Unexpected error during principal payment.", ex);
+            }
         }
     }
 }

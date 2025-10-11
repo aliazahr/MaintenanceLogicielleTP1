@@ -16,7 +16,8 @@ namespace SchoolManager
             typePrincipal = 1,
             typeTeacher,
             typeStudent,
-            typeReceptionist
+            typeReceptionist,
+            cancelOperation = 5
         }
 
         public static SchoolMember AcceptAttributes()
@@ -25,32 +26,38 @@ namespace SchoolManager
             {
                 SchoolMember member = new SchoolMember();
                 member.Name = Util.Console.AskQuestionName("Enter name: ");
-                member.Address = Util.Console.AskQuestionAddress("Enter address: ");
-                member.Phone = Util.Console.AskQuestionPhoneNumber("Enter phone number: ");
+                member.Address = Util.Console.AskQuestionAddress("--- Enter address ---");
+                member.Phone = Util.Console.AskQuestionPhoneNumber("\nEnter phone number: ");
 
                 return member;
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Failed to collect member attributes", ex);
+                throw new InvalidOperationException("\nFailed to collect member attributes", ex);
             }
         }
 
         private static int AcceptChoices()
         {
             const int minInput = 1;
-            const int maxInput = 5;
+            const int maxInput = 7;
             Console.WriteLine("\n====== Menu ======");
-            return Util.Console.AskQuestionMenu("1. Add\n2. Display\n3. Pay\n4. Raise Complaint\n5. Student Performance\nPlease enter the member type: ", minInput, maxInput);
+            return Util.Console.AskQuestionMenu("1. Add\n2. Display\n3. Pay\n4. Raise Complaint\n5. Student Performance\n6. Undo last action\n7. Exit\nPlease enter your desired option: ", minInput, maxInput);
         }
 
         private static int AcceptMemberType()
         {
             const int minInput = 1;
-            const int maxInput = 4;
-            int x = Util.Console.AskQuestionMenu("\n1. Principal\n2. Teacher\n3. Student\n4. Receptionist\nPlease enter the member type: ", minInput, maxInput);
+            const int maxInput = 5;
+            int x = Util.Console.AskQuestionMenu("\n1. Principal\n2. Teacher\n3. Student\n4. Receptionist\n5. Cancel\nPlease enter the member type: ", minInput, maxInput);
 
             return Enum.IsDefined(typeof(SchoolMemberType), x) ? x : -1;
+        }
+
+        public static void UndoLastAction()
+        {
+            Console.WriteLine("\n--- Undo Last Action ---");
+            UndoManager.UndoLastAction();
         }
 
         public static void AddPrincpal()
@@ -70,7 +77,7 @@ namespace SchoolManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while adding the principal: {ex.Message}");
+                Console.WriteLine($"\nError while adding the principal: {ex.Message}");
             }
         }
 
@@ -82,17 +89,26 @@ namespace SchoolManager
                 if (member == null)
                 {
                     Console.WriteLine("Failed to collect student information. Operation cancelled.");
+                    return;
                 }
 
                 Student newStudent = new Student(member.Name, member.Address, member.Phone);
                 newStudent.Grade = Util.Console.AskQuestionGrade("Enter grade: ");
 
-                Students.Add(newStudent);
+                // Enregistrer l'action d'ajout pour pouvoir l'annuler plus tard
+                var action = new AddStudentAction(Students, newStudent);
+
+                // Exécuter l'action et l'enregistrer dans le UndoManager
+                action.Execute();
+
+                // Pousser l'action dans la stack
+                UndoManager.RecordAction(action);
+
                 Console.WriteLine($"\n=== Student '{newStudent.Name}' has been successfully added! ===");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while adding the student: {ex.Message}");
+                Console.WriteLine($"\nError while adding the student: {ex.Message}");
             }
         }
 
@@ -110,12 +126,15 @@ namespace SchoolManager
                 Teacher newTeacher = new Teacher(member.Name, member.Address, member.Phone);
                 newTeacher.Subject = Util.Console.AskQuestionName("Enter subject: ");
 
-                Teachers.Add(newTeacher);
+                var action = new AddTeacherAction(Teachers, newTeacher);
+                action.Execute();
+                UndoManager.RecordAction(action);
+
                 Console.WriteLine($"\n=== Teacher '{newTeacher.Name}' has been successfully added! ===");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while adding the teacher: {ex.Message}");
+                Console.WriteLine($"\nError while adding the teacher: {ex.Message}");
             }
         }
 
@@ -141,6 +160,9 @@ namespace SchoolManager
                     case 3:
                         AddStudent();
                         break;
+                    case 5:
+                        Console.WriteLine("\nOperation cancelled.");
+                        break;
                     default:
                         Console.WriteLine("\nInvalid input. Terminating operation.");
                         break;
@@ -148,7 +170,7 @@ namespace SchoolManager
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in Add operation: {ex.Message}");
+                Console.WriteLine($"\nError in Add operation: {ex.Message}");
             }
         }
 
@@ -177,54 +199,138 @@ namespace SchoolManager
                     Console.WriteLine("\nThe Receptionist's details are:");
                     Receptionist.Display();
                     break;
+                case 5:
+                    Console.WriteLine("\nOperation cancelled.");
+                    break;
                 default:
                     Console.WriteLine("\nInvalid input. Terminating operation.");
                     break;
             }
         }
 
-        public static void Pay()
+        public static async Task Pay()
         {
-            Console.WriteLine("\nPlease note that the students cannot be paid.");
-            int memberType = AcceptMemberType();
-
-            Console.WriteLine("\nPayments in progress...");
-
-            switch (memberType)
+            try
             {
-                case 1:
-                    Principal.Pay();
-                    break;
-                case 2:
-                    List<Task> payments = new List<Task>();
+                Console.WriteLine("\n--- Pay School Members ---");
+                Console.WriteLine("\nPlease note that the students cannot be paid.");
+                int memberType = AcceptMemberType();
 
-                    foreach (Teacher teacher in Teachers)
-                    {
-                        Task payment = new Task(teacher.Pay);
-                        payments.Add(payment);
-                        payment.Start();
-                    }
+                while (memberType == 3)
+                {
+                    Console.WriteLine("\nStudents cannot be paid. Please select a different member type.");
+                    memberType = AcceptMemberType();
+                }
 
-                    Task.WaitAll(payments.ToArray());
+                // Mise dans un if case au lieu du switch case pour éviter l'impression de "Payments in progress..." et de "Payments completed"
+                if (memberType == 5)
+                {
+                    Console.WriteLine("\nOperation cancelled.");
+                    return;
+                }
 
-                    break;
-                case 4:
-                    Receptionist.Pay();
-                    break;
-                default:
-                    Console.WriteLine("\nInvalid input. Terminating operation.");
-                    break;
+                Console.WriteLine("\nPayments in progress...");
+
+                switch (memberType)
+                {
+                    case 1:
+                        if (Principal == null)
+                        {
+                            Console.WriteLine("\nNo principal available to pay.");
+                            return;
+                        }
+
+                        int previousBalancePrincipal = Principal.GetBalance();
+                        await Principal.PayAsync();
+                        UndoManager.RecordAction(new PaymentAction(Principal, previousBalancePrincipal, $"Payment to Principal: {Principal.Name}"));
+
+                        break;
+                    case 2:
+                        if (Teachers.Count == 0 || Teachers == null)
+                        {
+                            Console.WriteLine("\nNo teachers available to pay.");
+                            return;
+                        }
+
+                        // Sauvegarder les balances précédents des enseignants avant le paiement
+                        var teacherBalances = new Dictionary<Teacher, int>();
+                        foreach (var teacher in Teachers)
+                        {
+                            teacherBalances[teacher] = teacher.GetBalance();
+                        }
+
+                        // Paiement des enseignants
+                        var teacherTasks = Teachers.Select(teacher =>
+                        {
+                            if (teacher == null)
+                            {
+                                throw new InvalidOperationException("\nNull teacher found, skipping payment.");
+                            }
+                            return teacher.PayAsync();
+                        }).ToArray();
+
+                        await Task.WhenAll(teacherTasks);
+
+                        // Enregistrer l'action de paiement des enseignants pour pouvoir l'annuler plus tard
+                        UndoManager.RecordAction(new PayTeachersAction(Teachers, teacherBalances));
+
+                        break;
+                    case 4:
+                        if (Receptionist == null)
+                        {
+                            Console.WriteLine("\nNo receptionist available to pay.");
+                            return;
+                        }
+
+                        int previousBalanceReceptionist = Receptionist.GetBalance();
+                        await Receptionist.PayAsync();
+                        UndoManager.RecordAction(new PaymentAction(Receptionist, previousBalanceReceptionist, $"Payment to Receptionist: {Receptionist.Name}"));
+
+                        break;
+                    default:
+                        Console.WriteLine("\nInvalid input. Terminating operation.");
+                        break;
+                }
+
+                Console.WriteLine("\nPayments completed.\n");
             }
-
-            Console.WriteLine("Payments completed.\n");
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"\nPayment operation failed: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"\nUnexpected error during payment operation: {ex.Message}");
+            }
         }
 
         public static void RaiseComplaint()
         {
-            Receptionist.HandleComplaint();
+            Console.WriteLine("\n--- Raise Complaint ---");
+
+            Console.WriteLine("1. Submit Complaint\n2. Cancel");
+            int choice = Util.Console.AskQuestionMenu("Please enter your choice: ", 1, 2);
+
+            switch (choice)
+            {
+                case 1:
+                    string complaintText = Util.Console.AskQuestion("Enter your complaint: ");
+                    var action = new ComplaintAction(complaintText);
+                    action.Execute();
+                    UndoManager.RecordAction(action);
+
+                    Receptionist.HandleComplaint(complaintText);
+                    break;
+                case 2:
+                    Console.WriteLine("\nOperation cancelled.");
+                    break;
+                default:
+                    Console.WriteLine("\nInvalid input. Terminating operation.");
+                    break;
+            }
         }
 
-        private static void handleComplaintRaised(object sender, Complaint complaint)
+        private static void HandleComplaintRaised(object? sender, Complaint complaint)
         {
             Console.WriteLine("\nThis is a confirmation that we received your complaint. The details are as follows:");
             Console.WriteLine($"---------\nComplaint Time: {complaint.ComplaintTime.ToLongDateString()}, {complaint.ComplaintTime.ToLongTimeString()}");
@@ -244,7 +350,7 @@ namespace SchoolManager
             Address principalAddress = new Address(456, "Rue Gauchetiere", "Montreal", "QC", "B2B 2B2", "Canada");
             
             Receptionist = new Receptionist("Receptionist", receptionistAddress, 123);
-            Receptionist.ComplaintRaised += handleComplaintRaised;
+            Receptionist.ComplaintRaised += HandleComplaintRaised;
 
             Principal = new Principal("Principal", principalAddress, 123);
 
@@ -280,7 +386,7 @@ namespace SchoolManager
                         Display();
                         break;
                     case 3:
-                        Pay();
+                        await Pay();
                         break;
                     case 4:
                         RaiseComplaint();
@@ -288,13 +394,18 @@ namespace SchoolManager
                     case 5:
                         await ShowPerformance();
                         break;
+                    case 6:
+                        UndoLastAction();
+                        break;
+                    case 7:
+                        Console.WriteLine("\n-------------- Bye --------------");
+                        Environment.Exit(0);
+                        break;
                     default:
                         flag = false;
                         break;
                 }
             }
-
-            Console.WriteLine("\n-------------- Bye --------------");
         }
     }
 }
