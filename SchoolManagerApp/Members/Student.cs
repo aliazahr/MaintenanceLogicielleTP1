@@ -16,7 +16,12 @@ namespace SchoolManager
         public double Grade
         {
             get => _grade;
-            set { grade = value; }
+            set
+            {
+                if (value < 0 || value > 100)
+                    throw new ArgumentOutOfRangeException("Grade must be between 0 and 100.");
+                _grade = value;
+            }
         }
 
         public override string ToString()
