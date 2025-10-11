@@ -5,9 +5,9 @@ namespace SchoolManager
 {
     public class Student : SchoolMember
     {
-        private double _grade;
+        private double? _grade;
 
-        public Student(string name, Address address, string phoneNumber, double grade)
+        public Student(string name, Address address, string phoneNumber, double? grade = null)
             : base(name, address, phoneNumber)
         {
             Grade = grade;
@@ -16,7 +16,12 @@ namespace SchoolManager
         public double Grade
         {
             get => _grade;
-            set { grade = value; }
+            set
+            {
+                if (value < 0 || value > 100)
+                    throw new ArgumentOutOfRangeException("Grade must be between 0 and 100.");
+                _grade = value;
+            }
         }
 
         public override string ToString()
