@@ -13,15 +13,15 @@ namespace SchoolManager
             Grade = grade;
         }
 
-        public void Display()
-        {
-            Console.WriteLine("Name: {0}, Address: {1}, Phone: {2}, Grade: {3}", Name, Address, Phone, Grade);
-        }
-
         public double Grade
         {
             get => _grade;
             set { grade = value; }
+        }
+
+        public override string ToString()
+        {
+            return $"Student: {Name}, Address: {Address}, Phone: {PhoneNumber}, Grade: {Grade}";
         }
     }
 }
