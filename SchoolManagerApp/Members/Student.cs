@@ -5,27 +5,15 @@ namespace SchoolManager
 {
     public class Student : SchoolMember
     {
-        private double grade;
-        public double Grade
+        private double _grade;
+
+        public Student(string name, Address address, string phoneNumber, double grade)
+            : base(name, address, phoneNumber)
         {
-            get { return grade; }
-            set { grade = value; }
+            Grade = grade;
         }
 
-        public Student(string name = "", Address? address = null, int phoneNum = 0, int grade = 0)
-        {
-            Name = name;
-            Address = address  ?? throw new ArgumentNullException(nameof(address));
-            Phone = phoneNum;
-            this.grade = grade;
-        }
-
-        public void display()
-        {
-            Console.WriteLine("Name: {0}, Address: {1}, Phone: {2}, Grade: {3}", Name, Address, Phone, Grade);
-        }
-
-        public static double averageGrade(List<Student> students)
+        public static double AverageGrade(List<Student> students)
         {
             double avg = 0;
             foreach (Student student in students)
@@ -34,6 +22,17 @@ namespace SchoolManager
             }
 
             return avg / students.Count;
+        }
+
+        public void Display()
+        {
+            Console.WriteLine("Name: {0}, Address: {1}, Phone: {2}, Grade: {3}", Name, Address, Phone, Grade);
+        }
+
+        public double Grade
+        {
+            get => _grade;
+            set { grade = value; }
         }
     }
 }
