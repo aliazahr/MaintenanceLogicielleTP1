@@ -6,84 +6,55 @@ using System.Threading.Tasks;
 
 namespace SchoolManager
 {
-    public class Complaint : EventArgs
-    {
-        public DateTime ComplaintTime { get; set; }
-        public string ComplaintRaised { get; set; } = string.Empty;
-    }
-
     public class Receptionist : SchoolMember, IPayroll
     {
-        private int income;
-        private int balance;
+        private const int DefaultIncome = 10000;
+        private const int InitialEarningsBalance = 0;
+
+        private int _income;
+        private int _totalEarnings;
+
         public event EventHandler<Complaint>? ComplaintRaised;
 
-        public Receptionist(int income = 10000) 
+        public Receptionist(string name, Address? address, string phoneNumber, int income = DefaultIncome)
+            : base(name, address, phoneNumber)
         {
-            this.income = income;
-            balance = 0;
+            Income = income;
+            TotalEarnings = InitialEarningsBalance;
         }
 
-        public Receptionist(string name, Address? address, int phoneNum, int income = 10000)
+        public void ResetTotalEarnings()
         {
-            Name = name;
-            Address = address  ?? throw new ArgumentNullException(nameof(address));
-            Phone = phoneNum;
-            this.income = income;
-            balance = 0;
-        }
-
-        public int GetBalance()
-        {
-            return balance;
-        }
-
-        public void ResetBalance(int balance)
-        {
-            this.balance = balance;
-        }
-
-        public void Display()
-        {
-            Console.WriteLine("Name: {0}, Address: {1}, Phone: {2}", Name, Address, Phone);
+            _totalEarnings = InitialEarningsBalance;
         }
 
         public async Task PayAsync()
         {
             try
             {
-                if (income < 0)
+                if (_income < 0)
                 {
                     throw new InvalidOperationException("Receptionist income cannot be negative.");
                 }
 
-                if (balance < 0)
+                if (_totalEarnings < 0)
                 {
-                    throw new InvalidOperationException("Receptionist balance cannot be negative before payment.");
+                    throw new InvalidOperationException("Receptionist total earnings cannot be negative before payment.");
                 }
 
-                int oldBalance = balance;
-                balance = await Util.NetworkDelay.PayEntityAsync(balance, income);
+                int oldTotalEarnings = _totalEarnings;
+                _totalEarnings = await Util.NetworkDelay.PayEntityAsync(_totalEarnings, _income);
 
-                if (balance < oldBalance)
+                if (_totalEarnings < oldTotalEarnings)
                 {
-                    throw new InvalidOperationException("Balance decreased after payment.");
+                    throw new InvalidOperationException("Total earnings decreased after payment.");
                 }
 
-                Console.WriteLine($"\nPaid Receptionist: {Name}. Total balance: {balance}");
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"\nPayment failed for receptionist {Name}. Error: {ex.Message}");
-            }
-            catch (InvalidOperationException ex)
-            {
-                Console.WriteLine($"\nPayment failed for receptionist {Name}. Error: {ex.Message}");
+                Console.WriteLine($"\nPaid Receptionist: {Name}. Total earnings: {_totalEarnings}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\nUnexpected payment error occurred while paying Receptionist: {Name}. Error: {ex.Message}");
-                throw new InvalidOperationException("Unexpected error during receptionist payment.", ex);
+                Console.WriteLine($"\nPayment failed for receptionist {Name}. Error: {ex.Message}");
             }
         }
 
@@ -94,6 +65,23 @@ namespace SchoolManager
             complaint.ComplaintRaised = complaintText;
 
             ComplaintRaised?.Invoke(this, complaint);
+        }
+        
+        public int Income
+        {
+            get => _income;
+            private set { _income = value; }
+        }
+
+        public int TotalEarnings    
+        {
+            get => _totalEarnings;
+            private set { _totalEarnings = value; }
+        }
+
+        public override string ToString()
+        {
+            return $"Receptionist: {Name}, Address: {Address}, Phone: {PhoneNumber}, Income: {Income}, Total Earnings: {TotalEarnings}";
         }
     }
 }
