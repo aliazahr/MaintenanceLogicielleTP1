@@ -17,34 +17,34 @@ namespace SchoolManager
             _totalEarnings = InitialEarningsBalance;
         }
 
-        public void ResetTotalEarnings(int totalEarnings)
+        public void ResetTotalEarnings()
         {
-            _totalEarnings = totalEarnings;
+            _totalEarnings = InitialEarningsBalance;
         }
 
         public async Task PayAsync()
         {
             try
             {
-                if (income < 0)
+                if (_income < 0)
                 {
                     throw new InvalidOperationException("Principal income cannot be negative.");
                 }
 
-                if (balance < 0)
+                if (_totalEarnings < 0)
                 {
-                    throw new InvalidOperationException("Principal balance cannot be negative before payment.");
+                    throw new InvalidOperationException("Principal total earnings cannot be negative before payment.");
                 }
 
-                int oldBalance = balance;
-                balance = await Util.NetworkDelay.PayEntityAsync(balance, income);
+                int oldEarningBalance = _totalEarnings;
+                _totalEarnings = await Util.NetworkDelay.PayEntityAsync(_totalEarnings, _income);
 
-                if (balance < oldBalance)
+                if (_totalEarnings < oldEarningBalance)
                 {
-                    throw new InvalidOperationException("Balance decreased after payment.");
+                    throw new InvalidOperationException("Total earnings decreased after payment.");
                 }
 
-                Console.WriteLine($"\nPaid Principal: {Name}. Total balance: {balance}");
+                Console.WriteLine($"\nPaid Principal: {Name}. Total earnings: {_totalEarnings}");
             }
             catch (Exception ex)
             {
@@ -55,18 +55,28 @@ namespace SchoolManager
         public int TotalEarnings
         {
             get => _totalEarnings;
-            set { _totalEarnings = value; }
+            private set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Total earnings cannot be negative.");
+                _totalEarnings = value;
+            }
         }   
 
-        public int Balance
+        public int Income
         {
-            get => _balance;
-            set { _balance = value; }
-        }
-
+            get => _income;
+            private set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Income cannot be negative.");
+                _income = value;
+            }
+        }   
+        
         public override string ToString()
         {
-            return $"Principal: {Name}, Address: {Address}, Phone: {PhoneNumber}, Income: {Income}, Balance: {Balance}";
+            return $"Principal: {Name}, Address: {Address}, Phone: {PhoneNumber}, Income: {Income}, Total Earnings: {TotalEarnings}";
         }
     }
 }
