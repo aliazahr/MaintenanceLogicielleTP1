@@ -2,9 +2,10 @@
 {
     public class SchoolMember
     {
-        private string _name;
-        private Address _address;
-        private string _phoneNumber;
+        // Fields start as null but will be required to be set in constructor
+        private string _name = null!;
+        private Address _address = null!;
+        private string _phoneNumber = null!;
 
         public SchoolMember(string name, Address address, string phoneNumber)
         {
@@ -13,7 +14,7 @@
             PhoneNumber = phoneNumber;
         }
 
-        public string Name
+        public required string Name
         {
             get => _name;
             set
@@ -24,7 +25,7 @@
             }
         }
 
-        public Address Address
+        public required Address Address
         {
             get => _address;
             set
@@ -35,7 +36,7 @@
             }
         }
 
-        public string PhoneNumber
+        public required string PhoneNumber
         {
             get => _phoneNumber;
             set
