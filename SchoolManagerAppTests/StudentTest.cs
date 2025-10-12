@@ -4,44 +4,43 @@ namespace SchoolManagerAppTests;
 
 public class StudentTest
 {
+    // Declared default values for reuse
+    private readonly string _defaultName = "Jane Doe";
+    private readonly string _defaultPhoneNumber = "5149876543";
+
+    private readonly Address _defaultAddress = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
+
     [Fact]
     public void Constructor_WithValidData_ShouldCreateStudent()
     {
-        // Arrange
-        var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
-
         // Act
-        var student = new Student("Jane Doe", address, "5149876543");
+        var student = new Student(_defaultName, _defaultAddress, _defaultPhoneNumber);
 
         // Assert
-        Assert.Equal("Jane Doe", student.Name);
-        Assert.Equal(address, student.Address);
-        Assert.Equal("5149876543", student.PhoneNumber);
+        Assert.Equal(_defaultName, student.Name);
+        Assert.Equal(_defaultAddress, student.Address);
+        Assert.Equal(_defaultPhoneNumber, student.PhoneNumber);
     }
 
     [Fact]
     public void Constructor_WithEmptyName_ShouldThrowArgumentException()
     {
-        // Arrange
-        var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
-
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => new Student("", address, "5149876543"));
+        Assert.Throws<ArgumentException>(() => new Student("", _defaultAddress, _defaultPhoneNumber));
     }
 
     [Fact]
     public void Constructor_WithNullAddress_ShouldThrowArgumentNullException()
     {
         // Arrange, Act, Assert
-        Assert.Throws<ArgumentNullException>(() => new Student("Jane Doe", null!, "5149876543"));
+        Assert.Throws<ArgumentNullException>(() => new Student(_defaultName, null!, _defaultPhoneNumber));
     }
 
     [Fact]
     public void Grade_SetValidGrade_ShouldUpdateGrade()
     {
         // Arrange
-        var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
-        var student = new Student("Jane Doe", address, "5149876543");
+        var student = new Student(_defaultName, _defaultAddress, _defaultPhoneNumber);
 
         // Act
         student.Grade = 85.5;
@@ -56,8 +55,7 @@ public class StudentTest
     public void Grade_SetInvalidGrade_ShouldThrowArgumentOutOfRangeException(double invalidGrade)
     {
         // Arrange
-        var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
-        var student = new Student("Jane Doe", address, "5149876543");
+        var student = new Student(_defaultName, _defaultAddress, _defaultPhoneNumber);
 
         // Act & Assert
         Assert.Throws<ArgumentOutOfRangeException>(() => student.Grade = invalidGrade);
@@ -67,16 +65,16 @@ public class StudentTest
     public void ToString_WithValidData_ShouldIncludeAllDetails()
     {
         // Arrange
-        var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
-        var student = new Student("Jane Doe", address, "5149876543", 90.0);
+        double grade = 90.1;
+        var student = new Student(_defaultName, _defaultAddress, _defaultPhoneNumber, grade);
 
         // Act
         var result = student.ToString();
 
         // Assert
-        Assert.Contains("Jane Doe", result); // Name
-        Assert.Contains("123 Boul Rosemont", result); // Address
-        Assert.Contains("5149876543", result); // Phone Number
-        Assert.Contains("90", result); // Grade
+        Assert.Contains(_defaultName, result); // Name
+        Assert.Contains(_defaultAddress.ToString(), result); // Address
+        Assert.Contains(_defaultPhoneNumber, result); // Phone Number
+        Assert.Contains(grade.ToString(), result); // Grade
     }
 }
