@@ -65,20 +65,20 @@ public class PrincipalTest
     }
 
     [Fact]
-    public void ToString_WithValidData_ShouldIncludeAllDetails()
+    public void ToString_WithValidData_ShouldIncludeAllData()
     {
         // Arrange
         var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
         var principal = new Principal("John Doe", address, "5141234567");
 
         // Act
-        var toString = principal.ToString();
+        var result = principal.ToString();
 
         // Assert
-        Assert.Contains("John Doe", toString); // Name
-        Assert.Contains("123 Boul Rosemont", toString); // Address
-        Assert.Contains("5141234567", toString); // Phone Number
-        Assert.Contains("50000", toString); // Income
-        Assert.Contains("0", toString); // Total Earnings
+        Assert.Contains("John Doe", result); // Name
+        Assert.Contains("123 Boul Rosemont", result); // Address
+        Assert.Contains("5141234567", result); // Phone Number
+        Assert.Contains("50000", result); // Income
+        Assert.Contains("0", result); // Total Earnings
     }
 }
