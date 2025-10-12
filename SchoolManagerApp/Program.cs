@@ -448,6 +448,11 @@ namespace SchoolManager
                 .Build();
 
             var networkDelaySettings = config.GetRequiredSection("NetworkDelay").Get<NetworkDelaySettings>();
+            if (networkDelaySettings == null)
+            {
+                throw new InvalidOperationException("Failed to load NetworkDelay settings from configuration.");
+            }
+
             config.GetSection("NetworkDelay").Bind(networkDelaySettings);
 
             Console.WriteLine("\n--- Configuration Settings ---");
@@ -455,6 +460,11 @@ namespace SchoolManager
             Console.WriteLine($"Max = {networkDelaySettings.MaxMs}");
 
             var schoolEmployeeSettings = config.GetRequiredSection("SchoolEmployeeSettings").Get<SchoolEmployeeSettings>();
+            if (schoolEmployeeSettings == null)
+            {
+                throw new InvalidOperationException("Failed to load SchoolEmployee settings from configuration.");
+            }
+            
             config.GetSection("SchoolEmployeeSettings").Bind(schoolEmployeeSettings);
 
             Console.WriteLine($"Teacher Income = {schoolEmployeeSettings.TeacherIncome}");
