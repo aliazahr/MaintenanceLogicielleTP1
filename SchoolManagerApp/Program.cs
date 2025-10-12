@@ -12,6 +12,11 @@ namespace SchoolManager
         static public List<Teacher> Teachers = new List<Teacher>();
         static public Principal? Principal;
         static public Receptionist? Receptionist;
+        
+        // Configuration values from appsettings.json
+        static public int DefaultPrincipalIncome = 50000;
+        static public int DefaultTeacherIncome = 45000;
+        static public int DefaultReceptionistIncome = 35000;
 
         enum SchoolMemberType
         {
@@ -133,7 +138,7 @@ namespace SchoolManager
                 }   
 
                 string subject = UserConsole.AskQuestionName("Enter subject: ");
-                Teacher newTeacher = new Teacher(member.Name, member.Address, member.PhoneNumber, subject);
+                Teacher newTeacher = new Teacher(member.Name, member.Address, member.PhoneNumber, subject, DefaultTeacherIncome);
 
                 var action = new AddTeacherAction(Teachers, newTeacher);
                 action.Execute();
@@ -376,12 +381,10 @@ namespace SchoolManager
             Address receptionistAddress = new Address(123, "Boulevard Rosemont", "Montreal", "QC", "A1A 1A1", "Canada");
             Address principalAddress = new Address(456, "Rue Gauchetiere", "Montreal", "QC", "B2B 2B2", "Canada");
 
-            Principal = new Principal("Principal", principalAddress, "514-123-4567");
+            Principal = new Principal("Principal", principalAddress, "514-123-4567", DefaultPrincipalIncome);
 
             Receptionist = new Receptionist("Receptionist", receptionistAddress, "514-123-4567");
             Receptionist.ComplaintRaised += HandleComplaintRaised;
-
-            Principal = new Principal("Principal", principalAddress, "514-123-4567");
 
             for (int i = 0; i < 10; i++)
             {
@@ -392,15 +395,15 @@ namespace SchoolManager
                 string studentPhone = $"514-000-000{i}";
                 string teacherPhone = $"514-111-111{i}";
                 Students.Add(new Student(i.ToString(), studentAddress, studentPhone, i * 10));
-                Teachers.Add(new Teacher(i.ToString(), teacherAddress, teacherPhone, "Math"));
+                Teachers.Add(new Teacher(i.ToString(), teacherAddress, teacherPhone, "Math", DefaultTeacherIncome));
             }
         }
 
         public static async Task Main(string[] args)
         {
             // Just for manual testing purposes.
-            AddData();
             SetupConfig();
+            AddData();
 
             Console.WriteLine("-------------- Welcome ---------------\n");
 
@@ -447,7 +450,7 @@ namespace SchoolManager
                 .AddEnvironmentVariables(prefix: "APP_")
                 .Build();
 
-            var networkDelaySettings = config.GetRequiredSection("NetworkDelay").Get<NetworkDelaySettings>();
+            var networkDelaySettings = new NetworkDelaySettings();
             if (networkDelaySettings == null)
             {
                 throw new InvalidOperationException("Failed to load NetworkDelay settings from configuration.");
@@ -459,13 +462,18 @@ namespace SchoolManager
             Console.WriteLine($"Min = {networkDelaySettings.MinMs}");
             Console.WriteLine($"Max = {networkDelaySettings.MaxMs}");
 
-            var schoolEmployeeSettings = config.GetRequiredSection("SchoolEmployeeSettings").Get<SchoolEmployeeSettings>();
+            var schoolEmployeeSettings = new SchoolEmployeeSettings();
             if (schoolEmployeeSettings == null)
             {
                 throw new InvalidOperationException("Failed to load SchoolEmployee settings from configuration.");
             }
             
             config.GetSection("SchoolEmployeeSettings").Bind(schoolEmployeeSettings);
+
+            // Store configuration values in static fields
+            DefaultPrincipalIncome = schoolEmployeeSettings.PrincipalIncome;
+            DefaultTeacherIncome = schoolEmployeeSettings.TeacherIncome;
+            DefaultReceptionistIncome = schoolEmployeeSettings.ReceptionistIncome;
 
             Console.WriteLine($"Teacher Income = {schoolEmployeeSettings.TeacherIncome}");
             Console.WriteLine($"Principal Income = {schoolEmployeeSettings.PrincipalIncome}");      
