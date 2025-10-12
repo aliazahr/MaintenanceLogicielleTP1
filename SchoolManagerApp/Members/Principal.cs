@@ -10,12 +10,12 @@ namespace SchoolManager
         public override int Income => _income;
 
         [SetsRequiredMembers] // To indicate that this constructor sets all required members and can use constructor instead of object initializer
-        public Principal(string name, Address address, string phoneNumber, int income = DefaultIncome)
-            : base(name, address, phoneNumber, income)
+        public Principal(string name, Address address, string phoneNumber, int? income = null)
+            : base(name, address, phoneNumber, income ?? DefaultIncome)
         {
             if (income < 0)
                 throw new ArgumentOutOfRangeException(nameof(income), "Income cannot be negative.");
-            _income = income;
+            _income = income ?? DefaultIncome;
         }
 
         public override string ToString()
