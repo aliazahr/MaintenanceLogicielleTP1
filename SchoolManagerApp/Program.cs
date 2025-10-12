@@ -73,6 +73,12 @@ namespace SchoolManager
                     throw new InvalidOperationException("Failed to create principal with provided attributes");
                 }
 
+                if (Principal == null)
+                {
+                    Console.WriteLine("\nPrincipal not initialized. Cannot add principal.");
+                    return;
+                }
+
                 Principal.Name = member.Name;
                 Principal.Address = member.Address;
                 Principal.PhoneNumber = member.PhoneNumber;
@@ -210,7 +216,7 @@ namespace SchoolManager
                         Console.WriteLine("\nNo receptionist available to display.");
                         return;
                     }
-                    
+
                     Console.WriteLine("\nThe Receptionist's details are:");
                     Console.WriteLine(Receptionist.ToString());
                     break;
@@ -329,6 +335,12 @@ namespace SchoolManager
             switch (choice)
             {
                 case 1:
+                    if (Receptionist == null)
+                    {
+                        Console.WriteLine("\nNo receptionist available to handle complaints.");
+                        return;
+                    }
+
                     string complaintText = UserConsole.AskQuestion("Enter your complaint: ");
                     var action = new ComplaintAction(complaintText);
                     action.Execute();
@@ -438,6 +450,7 @@ namespace SchoolManager
             var networkDelaySettings = config.GetRequiredSection("NetworkDelay").Get<NetworkDelaySettings>();
             config.GetSection("NetworkDelay").Bind(networkDelaySettings);
 
+            Console.WriteLine("\n--- Configuration Settings ---");
             Console.WriteLine($"Min = {networkDelaySettings.MinMs}");
             Console.WriteLine($"Max = {networkDelaySettings.MaxMs}");
 
