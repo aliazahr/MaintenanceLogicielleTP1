@@ -8,7 +8,7 @@
    ```
 4. **Exécute** la commande suivante pour lancer l'application:
    ```bash
-   npm run dev
+   dotnet run
    ```
 
 ---

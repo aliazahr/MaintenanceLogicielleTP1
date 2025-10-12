@@ -129,10 +129,10 @@ namespace SchoolManager
                 {
                     Console.WriteLine("Failed to collect teacher information. Operation cancelled.");
                     return;
-                }
+                }   
 
-                Teacher newTeacher = new Teacher(member.Name, member.Address, member.PhoneNumber, DefaultTeacherIncome);
-                newTeacher.Subject = UserConsole.AskQuestionName("Enter subject: ");
+                string subject = UserConsole.AskQuestionName("Enter subject: ");
+                Teacher newTeacher = new Teacher(member.Name, member.Address, member.PhoneNumber, subject, DefaultTeacherIncome);
 
                 var action = new AddTeacherAction(Teachers, newTeacher);
                 action.Execute();
@@ -371,7 +371,7 @@ namespace SchoolManager
                 string studentPhone = $"514-000-000{i}";
                 string teacherPhone = $"514-111-111{i}";
                 Students.Add(new Student(i.ToString(), studentAddress, studentPhone, i * 10));
-                Teachers.Add(new Teacher(i.ToString(), teacherAddress, teacherPhone, DefaultTeacherIncome));
+                Teachers.Add(new Teacher(i.ToString(), teacherAddress, teacherPhone, "Math", DefaultTeacherIncome));
             }
         }
 
