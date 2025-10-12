@@ -419,8 +419,8 @@ namespace SchoolManager
         private static void SetupConfig()
         {
             var config = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false)
+                .AddEnvironmentVariables(prefix: "APP_")
                 .Build();
 
             var networkDelaySettings = config.GetRequiredSection("NetworkDelay").Get<NetworkDelaySettings>();
