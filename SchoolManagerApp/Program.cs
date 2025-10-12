@@ -8,8 +8,8 @@ namespace SchoolManager
     {
         static public List<Student> Students = new List<Student>();
         static public List<Teacher> Teachers = new List<Teacher>();
-        static public Principal Principal = new Principal();
-        static public Receptionist Receptionist = new Receptionist();
+        static public Principal Principal;
+        static public Receptionist Receptionist;
 
         enum SchoolMemberType
         {
@@ -24,11 +24,12 @@ namespace SchoolManager
         {
             try
             {
-                SchoolMember member = new SchoolMember();
-                member.Name = Util.Console.AskQuestionName("Enter name: ");
-                member.Address = Util.Console.AskQuestionAddress("--- Enter address ---");
-                member.Phone = Util.Console.AskQuestionPhoneNumber("\nEnter phone number: ");
+                string memberName = UserConsole.AskQuestionName("Enter name: ");
+                Address memberAddress = UserConsole.AskQuestionAddress("--- Enter address ---");
+                string memberPhoneNumber = UserConsole.AskQuestionPhoneNumber("\nEnter phone number: ");
 
+                SchoolMember member = new SchoolMember(memberName, memberAddress, memberPhoneNumber);   
+                
                 return member;
             }
             catch (Exception ex)
@@ -42,14 +43,14 @@ namespace SchoolManager
             const int minInput = 1;
             const int maxInput = 7;
             Console.WriteLine("\n====== Menu ======");
-            return Util.Console.AskQuestionMenu("1. Add\n2. Display\n3. Pay\n4. Raise Complaint\n5. Student Performance\n6. Undo last action\n7. Exit\nPlease enter your desired option: ", minInput, maxInput);
+            return UserConsole.AskQuestionMenu("1. Add\n2. Display\n3. Pay\n4. Raise Complaint\n5. Student Performance\n6. Undo last action\n7. Exit\nPlease enter your desired option: ", minInput, maxInput);
         }
 
         private static int AcceptMemberType()
         {
             const int minInput = 1;
             const int maxInput = 5;
-            int x = Util.Console.AskQuestionMenu("\n1. Principal\n2. Teacher\n3. Student\n4. Receptionist\n5. Cancel\nPlease enter the member type: ", minInput, maxInput);
+            int x = UserConsole.AskQuestionMenu("\n1. Principal\n2. Teacher\n3. Student\n4. Receptionist\n5. Cancel\nPlease enter the member type: ", minInput, maxInput);
 
             return Enum.IsDefined(typeof(SchoolMemberType), x) ? x : -1;
         }
@@ -72,7 +73,7 @@ namespace SchoolManager
 
                 Principal.Name = member.Name;
                 Principal.Address = member.Address;
-                Principal.Phone = member.Phone;
+                Principal.PhoneNumber = member.PhoneNumber;
                 Console.WriteLine($"\n--- Principal '{Principal.Name}' has been successfully added! ---");
             }
             catch (Exception ex)
@@ -92,8 +93,8 @@ namespace SchoolManager
                     return;
                 }
 
-                Student newStudent = new Student(member.Name, member.Address, member.Phone);
-                newStudent.Grade = Util.Console.AskQuestionGrade("Enter grade: ");
+                Student newStudent = new Student(member.Name, member.Address, member.PhoneNumber);
+                newStudent.Grade = UserConsole.AskQuestionGrade("Enter grade: ");
 
                 // Enregistrer l'action d'ajout pour pouvoir l'annuler plus tard
                 var action = new AddStudentAction(Students, newStudent);
@@ -123,8 +124,8 @@ namespace SchoolManager
                     return;
                 }
 
-                Teacher newTeacher = new Teacher(member.Name, member.Address, member.Phone);
-                newTeacher.Subject = Util.Console.AskQuestionName("Enter subject: ");
+                Teacher newTeacher = new Teacher(member.Name, member.Address, member.PhoneNumber);
+                newTeacher.Subject = UserConsole.AskQuestionName("Enter subject: ");
 
                 var action = new AddTeacherAction(Teachers, newTeacher);
                 action.Execute();
@@ -183,21 +184,21 @@ namespace SchoolManager
             {
                 case 1:
                     Console.WriteLine("\nThe Principal's details are:");
-                    Principal.display();
+                    Console.WriteLine(Principal.ToString());
                     break;
                 case 2:
                     Console.WriteLine("\nThe teachers are:");
                     foreach (Teacher teacher in Teachers)
-                        teacher.display();
+                        Console.WriteLine(teacher.ToString());
                     break;
                 case 3:
                     Console.WriteLine("\nThe students are:");
                     foreach (Student student in Students)
-                        student.display();
+                        Console.WriteLine(student.ToString());
                     break;
                 case 4:
                     Console.WriteLine("\nThe Receptionist's details are:");
-                    Receptionist.Display();
+                    Console.WriteLine(Receptionist.ToString());
                     break;
                 case 5:
                     Console.WriteLine("\nOperation cancelled.");
@@ -309,12 +310,12 @@ namespace SchoolManager
             Console.WriteLine("\n--- Raise Complaint ---");
 
             Console.WriteLine("1. Submit Complaint\n2. Cancel");
-            int choice = Util.Console.AskQuestionMenu("Please enter your choice: ", 1, 2);
+            int choice = UserConsole.AskQuestionMenu("Please enter your choice: ", 1, 2);
 
             switch (choice)
             {
                 case 1:
-                    string complaintText = Util.Console.AskQuestion("Enter your complaint: ");
+                    string complaintText = UserConsole.AskQuestion("Enter your complaint: ");
                     var action = new ComplaintAction(complaintText);
                     action.Execute();
                     UndoManager.RecordAction(action);
@@ -330,16 +331,16 @@ namespace SchoolManager
             }
         }
 
-        private static void HandleComplaintRaised(object? sender, Complaint complaint)
+        private static void HandleComplaintRaised(object? sender, ComplaintEventArgs complaint)
         {
             Console.WriteLine("\nThis is a confirmation that we received your complaint. The details are as follows:");
             Console.WriteLine($"---------\nComplaint Time: {complaint.ComplaintTime.ToLongDateString()}, {complaint.ComplaintTime.ToLongTimeString()}");
-            Console.WriteLine($"Complaint Raised: {complaint.ComplaintRaised}\n---------");
+            Console.WriteLine($"Complaint Raised: {complaint.ComplaintText}\n---------");
         }
 
         private static async Task ShowPerformance()
         {
-            double average = await Task.Run(() => Student.averageGrade(Students));
+            double average = await Task.Run(() => StudentManager.CalculateAverageGrade(Students));
             Console.WriteLine($"The student average performance is: {average}");
         }
 
@@ -348,11 +349,13 @@ namespace SchoolManager
             // Adresse d'exemple
             Address receptionistAddress = new Address(123, "Boulevard Rosemont", "Montreal", "QC", "A1A 1A1", "Canada");
             Address principalAddress = new Address(456, "Rue Gauchetiere", "Montreal", "QC", "B2B 2B2", "Canada");
+
+            Principal = new Principal("Principal", principalAddress, "514-123-4567");
             
-            Receptionist = new Receptionist("Receptionist", receptionistAddress, 123);
+            Receptionist = new Receptionist("Receptionist", receptionistAddress, "514-123-4567");
             Receptionist.ComplaintRaised += HandleComplaintRaised;
 
-            Principal = new Principal("Principal", principalAddress, 123);
+            Principal = new Principal("Principal", principalAddress, "514-123-4567");
 
             for (int i = 0; i < 10; i++)
             {
@@ -360,8 +363,10 @@ namespace SchoolManager
                 Address studentAddress = new Address(i + 100, $"Street{i}", $"City{i}", "QC", $"A{i}B {i}C{i}", "Canada");
                 Address teacherAddress = new Address(i + 200, $"Avenue{i}", $"City{i}", "QC", $"D{i}E {i}F{i}", "Canada");
 
-                Students.Add(new Student(i.ToString(), studentAddress, i, i));
-                Teachers.Add(new Teacher(i.ToString(), teacherAddress, i));
+                string studentPhone = $"514-000-000{i}";
+                string teacherPhone = $"514-111-111{i}";
+                Students.Add(new Student(i.ToString(), studentAddress, studentPhone, i * 10));
+                Teachers.Add(new Teacher(i.ToString(), teacherAddress, teacherPhone));
             }
         }
 

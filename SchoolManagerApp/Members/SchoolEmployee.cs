@@ -5,6 +5,7 @@ namespace SchoolManager
 {
     public abstract class SchoolEmployee : SchoolMember, IPayroll
     {
+        protected abstract int Income { get; }
         private const int InitialEarnings = 0;
 
         private int _totalEarnings;
@@ -19,14 +20,14 @@ namespace SchoolManager
         {
             try
             {
-                if (_income < 0)
+                if (Income < 0)
                     throw new InvalidOperationException($"{GetType().Name} income cannot be negative.");
 
                 if (_totalEarnings < 0)
                     throw new InvalidOperationException($"{GetType().Name} total earnings cannot be negative before payment.");
 
                 int oldEarnings = _totalEarnings;
-                _totalEarnings = await Util.NetworkDelay.PayEntityAsync(_totalEarnings, _income);
+                _totalEarnings = await Util.NetworkDelay.PayEntityAsync(_totalEarnings, Income);
 
                 if (_totalEarnings < oldEarnings)
                     throw new InvalidOperationException("Total earnings decreased after payment.");
@@ -39,10 +40,12 @@ namespace SchoolManager
             }
         }
 
-        public void ResetEarnings()
+        public void ResetBalance(int previousBalance)
         {
-            _totalEarnings = InitialEarnings;
+            _totalEarnings = previousBalance;
         }
+
+        public int GetBalance() => TotalEarnings;
 
         public int TotalEarnings
         {

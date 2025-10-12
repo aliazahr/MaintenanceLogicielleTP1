@@ -2,18 +2,18 @@ namespace SchoolManager
 {
     public class ComplaintEventArgs : EventArgs
     {
-        public DateTime ComplaintTime { get; set; }
-        public string ComplaintRaised { get; set; } = string.Empty;
+        public DateTime ComplaintTime { get; }
+        public string ComplaintText { get; set; } = string.Empty;
 
-        public ComplaintEventArgs(string complaintRaised)
+        public ComplaintEventArgs(string complaintText)
         {
             ComplaintTime = DateTime.Now;
-            ComplaintRaised = complaintRaised;
+            ComplaintText = complaintText;
         }
 
         public override string ToString()
         {
-            return $"Complaint raised at {ComplaintTime}: {ComplaintRaised}";
+            return $"Complaint raised at {ComplaintTime}: {ComplaintText}";
         }
     }
 }

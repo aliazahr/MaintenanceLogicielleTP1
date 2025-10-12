@@ -13,13 +13,16 @@ namespace SchoolManager
             Grade = grade;
         }
 
-        public double Grade
+        public double? Grade
         {
             get => _grade;
             set
             {
-                if (value < 0 || value > 100)
-                    throw new ArgumentOutOfRangeException("Grade must be between 0 and 100.");
+                if (value.HasValue)
+                {
+                    if (value < 0 || value > 100)
+                        throw new ArgumentOutOfRangeException(nameof(value), "Grade must be between 0 and 100.");
+                }
                 _grade = value;
             }
         }
