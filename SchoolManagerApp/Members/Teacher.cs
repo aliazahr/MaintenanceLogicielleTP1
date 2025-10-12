@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SchoolManager
 {
@@ -8,7 +9,8 @@ namespace SchoolManager
         private string _subject;
         private int _income;
 
-        public Teacher(string name, Address address, string phoneNumber, string subject, int? income = null) 
+        [SetsRequiredMembers] // To indicate that this constructor sets all required members and can use constructor instead of object initializer
+        public Teacher(string name, Address address, string phoneNumber, string subject, int? income = null)
             : base(name, address, phoneNumber, income ?? DefaultIncome)
         {
             if (income < 0)

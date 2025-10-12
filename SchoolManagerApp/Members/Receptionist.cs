@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace SchoolManager
 
         public event EventHandler<ComplaintEventArgs>? ComplaintRaised;
 
+        [SetsRequiredMembers] // To indicate that this constructor sets all required members and can use constructor instead of object initializer
         public Receptionist(string name, Address address, string phoneNumber, int? income = null)
             : base(name, address, phoneNumber, income ?? DefaultIncome)
         {

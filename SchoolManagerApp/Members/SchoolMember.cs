@@ -1,11 +1,15 @@
-﻿namespace SchoolManager
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SchoolManager
 {
     public class SchoolMember
     {
-        private string _name;
-        private Address _address;
-        private string _phoneNumber;
+        // Fields start as null but will be required to be set in constructor
+        private string _name = null!;
+        private Address _address = null!;
+        private string _phoneNumber = null!;
 
+        [SetsRequiredMembers] // To indicate that this constructor sets all required members and can use constructor instead of object initializer
         public SchoolMember(string name, Address address, string phoneNumber)
         {
             Name = name;
@@ -13,7 +17,7 @@
             PhoneNumber = phoneNumber;
         }
 
-        public string Name
+        public required string Name
         {
             get => _name;
             set
@@ -24,7 +28,7 @@
             }
         }
 
-        public Address Address
+        public required Address Address
         {
             get => _address;
             set
@@ -35,7 +39,7 @@
             }
         }
 
-        public string PhoneNumber
+        public required string PhoneNumber
         {
             get => _phoneNumber;
             set
