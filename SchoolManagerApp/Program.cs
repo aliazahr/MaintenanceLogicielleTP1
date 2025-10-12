@@ -63,7 +63,7 @@ namespace SchoolManager
             UndoManager.UndoLastAction();
         }
 
-        public static void AddPrincpal()
+        public static void AddPrincipal()
         {
             try
             {
@@ -185,6 +185,12 @@ namespace SchoolManager
             switch (memberType)
             {
                 case 1:
+                    if (Principal == null)
+                    {
+                        Console.WriteLine("\nNo principal available to display.");
+                        return;
+                    }
+
                     Console.WriteLine("\nThe Principal's details are:");
                     Console.WriteLine(Principal.ToString());
                     break;
@@ -199,6 +205,12 @@ namespace SchoolManager
                         Console.WriteLine(student.ToString());
                     break;
                 case 4:
+                    if (Receptionist == null)
+                    {
+                        Console.WriteLine("\nNo receptionist available to display.");
+                        return;
+                    }
+                    
                     Console.WriteLine("\nThe Receptionist's details are:");
                     Console.WriteLine(Receptionist.ToString());
                     break;
