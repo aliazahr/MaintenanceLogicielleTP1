@@ -6,38 +6,33 @@ using System.Threading.Tasks;
 
 namespace SchoolManager
 {
-    public class Receptionist : SchoolEmployee, IPayroll
+    public class Receptionist : SchoolEmployee
     {
         private const int DefaultIncome = 10000;
+        private int _income;
+        protected override int Income => _income;
 
-        public event EventHandler<Complaint>? ComplaintRaised;
+        public event EventHandler<ComplaintEventArgs>? ComplaintRaised;
 
         public Receptionist(string name, Address address, string phoneNumber, int income = DefaultIncome)
-            : base(name, address, phoneNumber)
+            : base(name, address, phoneNumber, income)
         {
-            Income = income;
+            if (income < 0)
+                throw new ArgumentOutOfRangeException(nameof(income), "Income cannot be negative.");
+            _income = income;
         }
 
         public void HandleComplaint(string complaintText)
         {
-            Complaint complaint = new Complaint();
-            complaint.ComplaintTime = DateTime.Now;
-            complaint.ComplaintRaised = complaintText;
+            if (string.IsNullOrWhiteSpace(complaintText))
+                throw new ArgumentException("Complaint cannot be empty.", nameof(complaintText));
 
+            ComplaintEventArgs complaint = new ComplaintEventArgs(complaintText);
             ComplaintRaised?.Invoke(this, complaint);
+
+            Console.WriteLine($"Complaint handled by {Name} at {complaint.ComplaintTime}: {complaint.ComplaintText}");
         }
         
-        public int Income
-        {
-            get => _income;
-            private set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value), "Income cannot be negative.");
-                _income = value;
-            }
-        }  
-
         public override string ToString()
         {
             return $"Receptionist: {Name}, Address: {Address}, Phone: {PhoneNumber}, Income: {Income}, Total Earnings: {TotalEarnings}";

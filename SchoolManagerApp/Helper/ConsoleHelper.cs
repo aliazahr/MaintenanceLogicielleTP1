@@ -1,8 +1,9 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 
-namespace Util
+namespace SchoolManager
 {
-    public class Console
+    public class UserConsole
     {
         static public string AskQuestion(string question)
         {
@@ -254,58 +255,29 @@ namespace Util
             }
         }
 
-        static public int AskQuestionPhoneNumber(string question)
+        static public string AskQuestionPhoneNumber(string question)
         {
             if (string.IsNullOrWhiteSpace(question))
             {
                 throw new ArgumentException("Question cannot be null or whitespace.");
             }
 
-            const int minPhone = 1000000000; // 10 digits minimum
-            const int maxPhone = int.MaxValue; // Value maximum pour un integer
+            var phoneRegex = new Regex(@"^\+?[1-9]\d{6,14}$");
 
             while (true)
             {
-                try
-                {
                     System.Console.Write(question);
                     string? input = System.Console.ReadLine();
 
                     if (!string.IsNullOrWhiteSpace(input))
                     {
-                        string cleanInput = input.Replace(" ", "").Replace("-", "").Replace("(", "").Replace(")", ""); // Enlève les espaces, tirets et parenthèses
+                        string cleanInput = Regex.Replace(input, @"(?!^\+)\D", ""); // Enlève les espaces, tirets et parenthèses
 
-                        if (int.TryParse(input, out int result))
-                        {
-                            if (result >= minPhone && result <= maxPhone)
-                            {
-                                return result;
-                            }
+                        if (phoneRegex.IsMatch(cleanInput))
+                            return cleanInput;
 
-                            System.Console.WriteLine($"Invalid input. Please enter a valid phone number (at least 10 digits).");
-                        }
-                        else
-                        {
-                            System.Console.WriteLine("Invalid input. Please enter a valid phone number.");
-                        }
-                    }
-                    else
-                    {
                         System.Console.WriteLine("Input cannot be empty. Please enter a valid phone number.");
                     }
-                }
-                catch (FormatException)
-                {
-                    System.Console.WriteLine("\nInvalid input format. Please enter a valid phone number.");
-                }
-                catch (OverflowException)
-                {
-                    System.Console.WriteLine("\nInput number is too large. Please enter a valid phone number.");
-                }
-                catch (Exception ex)
-                {
-                    throw new InvalidOperationException("\nFailed to read phone number input", ex);
-                }
             }
         }
     }

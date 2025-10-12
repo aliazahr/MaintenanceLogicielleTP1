@@ -8,11 +8,10 @@ namespace SchoolManager
         private string _subject;
         private int _income;
 
-        public Teacher(string name, Address address, string phoneNumber, string subject, int income = 25000) 
+        public Teacher(string name, Address address, string phoneNumber, int income = DefaultIncome) 
             : base(name, address, phoneNumber, income)
         {
-            Subject = subject;
-            Income = income;
+            _income = income;
         }
         
         public string Subject
@@ -26,15 +25,9 @@ namespace SchoolManager
             }
         }   
 
-        public int Income
+        protected override int Income
         {
             get => _income;
-            private set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value), "Income cannot be negative.");
-                _income = value;
-            }
         }
 
         public override string ToString()
