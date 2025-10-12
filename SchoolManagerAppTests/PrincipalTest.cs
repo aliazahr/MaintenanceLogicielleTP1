@@ -4,51 +4,50 @@ namespace SchoolManagerAppTests;
 
 public class PrincipalTest
 {
+    // Declared default values for reuse
+    private readonly string _defaultName = "John Doe";
+    private readonly string _defaultPhoneNumber = "5149876543";
+
+    private readonly Address _defaultAddress = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
+    private readonly int _defaultIncome = 50000;
+    private readonly int _defaultTotalEarnings = 0;
+    
     [Fact]
     public void Constructor_WithValidData_ShouldCreatePrincipal()
     {
-        // Arrange
-        var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
-
         // Act
-        var principal = new Principal("John Doe", address, "5141234567");
+        var principal = new Principal(_defaultName, _defaultAddress, _defaultPhoneNumber);
 
         // Assert
-        Assert.Equal("John Doe", principal.Name);
-        Assert.Equal(address, principal.Address);
-        Assert.Equal("5141234567", principal.PhoneNumber);
-        Assert.Equal(0, principal.TotalEarnings);
-        Assert.Equal(50000, principal.Income); // Default income
+        Assert.Equal(_defaultName, principal.Name);
+        Assert.Equal(_defaultAddress, principal.Address);
+        Assert.Equal(_defaultPhoneNumber, principal.PhoneNumber);
+        Assert.Equal(_defaultTotalEarnings, principal.TotalEarnings);
+        Assert.Equal(_defaultIncome, principal.Income);
     }
 
     [Fact]
     public void Constructor_WithEmptyName_ShouldThrowArgumentException()
     {
-        // Arrange
-        var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
-
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => new Principal("", address, "5141234567"));
+        Assert.Throws<ArgumentException>(() => new Principal("", _defaultAddress, _defaultPhoneNumber));
     }
 
     [Fact]
     public void Constructor_WithNullAddress_ShouldThrowArgumentNullException()
     {
         // Arrange, Act, Assert
-        Assert.Throws<ArgumentNullException>(() => new Principal("John Doe", null!, "5141234567"));
+        Assert.Throws<ArgumentNullException>(() => new Principal(_defaultName, null!, _defaultPhoneNumber));
     }
 
     [Fact]
     public void Constructor_WithoutIncome_ShouldApplyDefaultIncome()
     {
-        // Arrange
-        var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
-
         // Act
-        var principal = new Principal("John Doe", address, "5141234567");
+        var principal = new Principal(_defaultName, _defaultAddress, _defaultPhoneNumber);
 
         // Assert
-        Assert.Equal(50000, principal.Income); // Default income
+        Assert.Equal(_defaultIncome, principal.Income); // Default income = 50000
     }
 
     [Theory]
@@ -57,28 +56,24 @@ public class PrincipalTest
     [InlineData(int.MinValue)]
     public void Constructor_WithNegativeIncome_ShouldThrowArgumentOutOfRangeException(int income)
     {
-        // Arrange
-        var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
-
         // Act & Assert
-        Assert.Throws<ArgumentOutOfRangeException>(() => new Principal("John Doe", address, "5141234567", income));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Principal(_defaultName, _defaultAddress, _defaultPhoneNumber, income));
     }
 
     [Fact]
     public void ToString_WithValidData_ShouldIncludeAllData()
     {
         // Arrange
-        var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
-        var principal = new Principal("John Doe", address, "5141234567");
+        var principal = new Principal(_defaultName, _defaultAddress, _defaultPhoneNumber);
 
         // Act
         var result = principal.ToString();
 
         // Assert
-        Assert.Contains("John Doe", result); // Name
-        Assert.Contains("123 Boul Rosemont", result); // Address
-        Assert.Contains("5141234567", result); // Phone Number
-        Assert.Contains("50000", result); // Income
-        Assert.Contains("0", result); // Total Earnings
+        Assert.Contains(_defaultName, result); // Name
+        Assert.Contains(_defaultAddress.ToString(), result); // Address
+        Assert.Contains(_defaultPhoneNumber, result); // Phone Number
+        Assert.Contains(_defaultIncome.ToString(), result); // Income
+        Assert.Contains(_defaultTotalEarnings.ToString(), result); // Total Earnings
     }
 }

@@ -4,6 +4,7 @@ namespace SchoolManagerAppTests;
 
 public class StudentTest
 {
+    // Declared default values for reuse
     private readonly string _defaultName = "Jane Doe";
     private readonly string _defaultPhoneNumber = "5149876543";
 
@@ -64,7 +65,7 @@ public class StudentTest
     public void ToString_WithValidData_ShouldIncludeAllDetails()
     {
         // Arrange
-        double grade = 92.3;
+        double grade = 90.1;
         var student = new Student(_defaultName, _defaultAddress, _defaultPhoneNumber, grade);
 
         // Act
