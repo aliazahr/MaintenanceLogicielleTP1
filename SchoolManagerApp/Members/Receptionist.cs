@@ -16,7 +16,7 @@ namespace SchoolManager
 
         public event EventHandler<Complaint>? ComplaintRaised;
 
-        public Receptionist(string name, Address? address, string phoneNumber, int income = DefaultIncome)
+        public Receptionist(string name, Address address, string phoneNumber, int income = DefaultIncome)
             : base(name, address, phoneNumber)
         {
             Income = income;
@@ -70,13 +70,23 @@ namespace SchoolManager
         public int Income
         {
             get => _income;
-            private set { _income = value; }
+            private set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Income cannot be negative.");
+                _income = value;
+            }
         }
 
         public int TotalEarnings    
         {
             get => _totalEarnings;
-            private set { _totalEarnings = value; }
+            private set 
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Total earnings cannot be negative.");
+                _totalEarnings = value;
+            }
         }
 
         public override string ToString()

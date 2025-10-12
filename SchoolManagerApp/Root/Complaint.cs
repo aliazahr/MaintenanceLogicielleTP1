@@ -5,5 +5,4 @@ namespace SchoolManager
         public DateTime ComplaintTime { get; set; }
         public string ComplaintRaised { get; set; } = string.Empty;
     }
-
 }
