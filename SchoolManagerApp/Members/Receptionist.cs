@@ -10,7 +10,7 @@ namespace SchoolManager
     {
         private const int DefaultIncome = 10000;
         private int _income;
-        protected override int Income => _income;
+        public override int Income => _income;
 
         public event EventHandler<ComplaintEventArgs>? ComplaintRaised;
 

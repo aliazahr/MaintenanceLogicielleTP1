@@ -5,7 +5,7 @@ namespace SchoolManager
 {
     public abstract class SchoolEmployee : SchoolMember, IPayroll
     {
-        protected abstract int Income { get; }
+        public abstract int Income { get; }
         private const int InitialEarnings = 0;
 
         private int _totalEarnings;

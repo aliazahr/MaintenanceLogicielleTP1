@@ -28,7 +28,7 @@ public class PrincipalTest
         var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
 
         // Act & Assert
-        Assert.Throws<ArgumentOutOfRangeException>(() => new Principal("", address, "5141234567"));
+        Assert.Throws<ArgumentException>(() => new Principal("", address, "5141234567"));
     }
 
     [Fact]
