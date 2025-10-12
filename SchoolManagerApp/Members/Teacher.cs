@@ -11,9 +11,11 @@ namespace SchoolManager
         public Teacher(string name, Address address, string phoneNumber, int income = DefaultIncome) 
             : base(name, address, phoneNumber, income)
         {
+            if (income < 0)
+                throw new ArgumentOutOfRangeException(nameof(income), "Income cannot be negative.");
             _income = income;
         }
-        
+
         public string Subject
         {
             get => _subject;
