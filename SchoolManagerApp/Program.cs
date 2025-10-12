@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 
 namespace SchoolManager
 {
@@ -8,8 +10,8 @@ namespace SchoolManager
     {
         static public List<Student> Students = new List<Student>();
         static public List<Teacher> Teachers = new List<Teacher>();
-        static public Principal Principal;
-        static public Receptionist Receptionist;
+        static public Principal? Principal;
+        static public Receptionist? Receptionist;
 
         enum SchoolMemberType
         {
@@ -351,7 +353,7 @@ namespace SchoolManager
             Address principalAddress = new Address(456, "Rue Gauchetiere", "Montreal", "QC", "B2B 2B2", "Canada");
 
             Principal = new Principal("Principal", principalAddress, "514-123-4567");
-            
+
             Receptionist = new Receptionist("Receptionist", receptionistAddress, "514-123-4567");
             Receptionist.ComplaintRaised += HandleComplaintRaised;
 
@@ -374,6 +376,7 @@ namespace SchoolManager
         {
             // Just for manual testing purposes.
             AddData();
+            SetupConfig();
 
             Console.WriteLine("-------------- Welcome ---------------\n");
 
@@ -411,6 +414,20 @@ namespace SchoolManager
                         break;
                 }
             }
+        }
+
+        private static void SetupConfig()
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
+
+            var networkDelaySettings = config.GetRequiredSection("NetworkDelay").Get<NetworkDelaySettings>();
+            config.GetSection("NetworkDelay").Bind(networkDelaySettings);
+
+            Console.WriteLine($"Min = {networkDelaySettings.MinMs}");
+            Console.WriteLine($"Max = {networkDelaySettings.MaxMs}");
         }
     }
 }
