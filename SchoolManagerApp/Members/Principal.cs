@@ -2,11 +2,11 @@
 
 namespace SchoolManager
 {
-    public class Principal : SchoolEmployee
+    public class Principal : SchoolEmployee, IPayroll
     {
         private const int DefaultIncome = 50000;
         private int _income;
-        protected override int Income => _income;
+        public override int Income => _income;
 
         public Principal(string name, Address address, string phoneNumber, int income = DefaultIncome)
             : base(name, address, phoneNumber, income)

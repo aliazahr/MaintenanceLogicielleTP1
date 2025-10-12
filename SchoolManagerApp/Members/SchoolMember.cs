@@ -43,7 +43,7 @@
                 if (string.IsNullOrWhiteSpace(value))
                     throw new ArgumentException("Phone cannot be empty.");
                 if (value.Length < 8)
-                    throw new ArgumentException("Phone number seems to be short");
+                    throw new ArgumentOutOfRangeException("Phone number seems to be short");
 
                 _phoneNumber = value;
             }

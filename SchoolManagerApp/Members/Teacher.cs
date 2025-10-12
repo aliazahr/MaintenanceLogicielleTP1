@@ -25,7 +25,7 @@ namespace SchoolManager
             }
         }   
 
-        protected override int Income
+        public override int Income
         {
             get => _income;
         }

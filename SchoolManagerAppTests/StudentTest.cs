@@ -26,7 +26,7 @@ public class StudentTest
         var address = new Address(123, "Boul Rosemont", "Montreal", "QC", "H1A 1A1", "Canada");
 
         // Act & Assert
-        Assert.Throws<ArgumentOutOfRangeException>(() => new Student("", address, "5149876543"));
+        Assert.Throws<ArgumentException>(() => new Student("", address, "5149876543"));
     }
 
     [Fact]
