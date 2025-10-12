@@ -36,7 +36,7 @@ namespace SchoolManager
                     throw new ArgumentOutOfRangeException(nameof(value), "Income cannot be negative.");
                 _income = value;
             }
-        }
+        }  
 
         public override string ToString()
         {

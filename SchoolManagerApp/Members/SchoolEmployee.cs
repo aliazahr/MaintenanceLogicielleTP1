@@ -7,13 +7,11 @@ namespace SchoolManager
     {
         private const int InitialEarnings = 0;
 
-        private int _income;
         private int _totalEarnings;
     
         protected SchoolEmployee(string name, Address address, string phoneNumber, int income)
             : base(name, address, phoneNumber)
         {
-            Income = income;
             TotalEarnings = InitialEarnings;
         }
 
@@ -44,17 +42,6 @@ namespace SchoolManager
         public void ResetEarnings()
         {
             _totalEarnings = InitialEarnings;
-        }
-
-        public int Income
-        {
-            get => _income;
-            protected set
-            {
-                if (value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value), "Income cannot be negative.");
-                _income = value;
-            }
         }
 
         public int TotalEarnings
