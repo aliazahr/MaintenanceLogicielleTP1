@@ -2,7 +2,7 @@
 
 namespace SchoolManager
 {
-    public class Teacher : SchoolEmployee, IPayroll
+    public class Teacher : SchoolEmployee
     {
         private const int DefaultIncome = 25000;
         private string _subject;
