@@ -81,6 +81,11 @@ namespace Util
             {
                 throw new InvalidOperationException("\nAn error occurred during the payment operation.", ex);
             }
-        }   
+        }
+
+        internal static void Configure(int minMs, int maxMs)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
