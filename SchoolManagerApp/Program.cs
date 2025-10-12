@@ -12,6 +12,11 @@ namespace SchoolManager
         static public List<Teacher> Teachers = new List<Teacher>();
         static public Principal? Principal;
         static public Receptionist? Receptionist;
+        
+        // Configuration values from appsettings.json
+        static public int DefaultPrincipalIncome = 50000;
+        static public int DefaultTeacherIncome = 45000;
+        static public int DefaultReceptionistIncome = 35000;
 
         enum SchoolMemberType
         {
@@ -352,12 +357,10 @@ namespace SchoolManager
             Address receptionistAddress = new Address(123, "Boulevard Rosemont", "Montreal", "QC", "A1A 1A1", "Canada");
             Address principalAddress = new Address(456, "Rue Gauchetiere", "Montreal", "QC", "B2B 2B2", "Canada");
 
-            Principal = new Principal("Principal", principalAddress, "514-123-4567");
+            Principal = new Principal("Principal", principalAddress, "514-123-4567", DefaultPrincipalIncome);
 
             Receptionist = new Receptionist("Receptionist", receptionistAddress, "514-123-4567");
             Receptionist.ComplaintRaised += HandleComplaintRaised;
-
-            Principal = new Principal("Principal", principalAddress, "514-123-4567");
 
             for (int i = 0; i < 10; i++)
             {
@@ -375,8 +378,8 @@ namespace SchoolManager
         public static async Task Main(string[] args)
         {
             // Just for manual testing purposes.
-            AddData();
             SetupConfig();
+            AddData();
 
             Console.WriteLine("-------------- Welcome ---------------\n");
 
@@ -423,14 +426,19 @@ namespace SchoolManager
                 .AddEnvironmentVariables(prefix: "APP_")
                 .Build();
 
-            var networkDelaySettings = config.GetRequiredSection("NetworkDelay").Get<NetworkDelaySettings>();
+            var networkDelaySettings = new NetworkDelaySettings();
             config.GetSection("NetworkDelay").Bind(networkDelaySettings);
 
             Console.WriteLine($"Min = {networkDelaySettings.MinMs}");
             Console.WriteLine($"Max = {networkDelaySettings.MaxMs}");
 
-            var schoolEmployeeSettings = config.GetRequiredSection("SchoolEmployeeSettings").Get<SchoolEmployeeSettings>();
+            var schoolEmployeeSettings = new SchoolEmployeeSettings();
             config.GetSection("SchoolEmployeeSettings").Bind(schoolEmployeeSettings);
+
+            // Store configuration values in static fields
+            DefaultPrincipalIncome = schoolEmployeeSettings.PrincipalIncome;
+            DefaultTeacherIncome = schoolEmployeeSettings.TeacherIncome;
+            DefaultReceptionistIncome = schoolEmployeeSettings.ReceptionistIncome;
 
             Console.WriteLine($"Teacher Income = {schoolEmployeeSettings.TeacherIncome}");
             Console.WriteLine($"Principal Income = {schoolEmployeeSettings.PrincipalIncome}");      
