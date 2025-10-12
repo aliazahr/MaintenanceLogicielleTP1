@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SchoolManager
 {
@@ -8,6 +9,7 @@ namespace SchoolManager
         private int _income;
         public override int Income => _income;
 
+        [SetsRequiredMembers] // To indicate that this constructor sets all required members and can use constructor instead of object initializer
         public Principal(string name, Address address, string phoneNumber, int income = DefaultIncome)
             : base(name, address, phoneNumber, income)
         {

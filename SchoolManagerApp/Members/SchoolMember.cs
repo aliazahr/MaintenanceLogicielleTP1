@@ -1,4 +1,6 @@
-﻿namespace SchoolManager
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SchoolManager
 {
     public class SchoolMember
     {
@@ -7,6 +9,7 @@
         private Address _address = null!;
         private string _phoneNumber = null!;
 
+        [SetsRequiredMembers] // To indicate that this constructor sets all required members and can use constructor instead of object initializer
         public SchoolMember(string name, Address address, string phoneNumber)
         {
             Name = name;
