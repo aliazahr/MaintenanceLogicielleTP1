@@ -30,8 +30,13 @@ namespace SchoolManager
         public int Income
         {
             get => _income;
-            private set { _income = value; }
-        }
+            private set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Income cannot be negative.");
+                _income = value;
+            }
+        }  
 
         public override string ToString()
         {
