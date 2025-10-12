@@ -428,6 +428,13 @@ namespace SchoolManager
 
             Console.WriteLine($"Min = {networkDelaySettings.MinMs}");
             Console.WriteLine($"Max = {networkDelaySettings.MaxMs}");
+
+            var schoolEmployeeSettings = config.GetRequiredSection("SchoolEmployeeSettings").Get<SchoolEmployeeSettings>();
+            config.GetSection("SchoolEmployeeSettings").Bind(schoolEmployeeSettings);
+
+            Console.WriteLine($"Teacher Income = {schoolEmployeeSettings.TeacherIncome}");
+            Console.WriteLine($"Principal Income = {schoolEmployeeSettings.PrincipalIncome}");      
+            Console.WriteLine($"Receptionist Income = {schoolEmployeeSettings.ReceptionistIncome}");
         }
     }
 }
