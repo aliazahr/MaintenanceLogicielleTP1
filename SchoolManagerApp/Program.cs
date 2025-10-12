@@ -131,7 +131,7 @@ namespace SchoolManager
                     return;
                 }
 
-                Teacher newTeacher = new Teacher(member.Name, member.Address, member.PhoneNumber);
+                Teacher newTeacher = new Teacher(member.Name, member.Address, member.PhoneNumber, DefaultTeacherIncome);
                 newTeacher.Subject = UserConsole.AskQuestionName("Enter subject: ");
 
                 var action = new AddTeacherAction(Teachers, newTeacher);
@@ -371,7 +371,7 @@ namespace SchoolManager
                 string studentPhone = $"514-000-000{i}";
                 string teacherPhone = $"514-111-111{i}";
                 Students.Add(new Student(i.ToString(), studentAddress, studentPhone, i * 10));
-                Teachers.Add(new Teacher(i.ToString(), teacherAddress, teacherPhone));
+                Teachers.Add(new Teacher(i.ToString(), teacherAddress, teacherPhone, DefaultTeacherIncome));
             }
         }
 
