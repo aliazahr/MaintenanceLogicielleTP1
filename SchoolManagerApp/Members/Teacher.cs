@@ -6,7 +6,7 @@ namespace SchoolManager
     public class Teacher : SchoolEmployee
     {
         private const int DefaultIncome = 25000;
-        private string _subject;
+        private string _subject = string.Empty;
         private int _income;
 
         [SetsRequiredMembers] // To indicate that this constructor sets all required members and can use constructor instead of object initializer
