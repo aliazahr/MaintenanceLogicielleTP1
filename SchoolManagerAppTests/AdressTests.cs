@@ -27,60 +27,79 @@ public class AdressTests
         Assert.Equal(country, address.Country);
     }
 
-
-    
+        
+    // Nulls -> ArgumentNullException
     [Theory]
     [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Null_StreetName_Throws(string? value)
-    {
-        Assert.Throws<ArgumentNullException>(() =>
+    public void StreetName_Null_Throws(string? value)
+        => Assert.Throws<ArgumentNullException>(() =>
             new Address(1, value!, "City", "Province", "Code", "Country"));
-    }
 
-    
     [Theory]
     [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Null_City_Throws(string? value)
-    {
-        Assert.Throws<ArgumentNullException>(() =>
+    public void City_Null_Throws(string? value)
+        => Assert.Throws<ArgumentNullException>(() =>
             new Address(1, "Street", value!, "Province", "Code", "Country"));
-    }
 
-    
     [Theory]
     [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Null_Province_Throws(string? value)
-    {
-        Assert.Throws<ArgumentNullException>(() =>
+    public void Province_Null_Throws(string? value)
+        => Assert.Throws<ArgumentNullException>(() =>
             new Address(1, "Street", "City", value!, "Code", "Country"));
-    }
 
-    
     [Theory]
     [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Null_PostalCode_Throws(string? value)
-    {
-        Assert.Throws<ArgumentNullException>(() =>
+    public void PostalCode_Null_Throws(string? value)
+        => Assert.Throws<ArgumentNullException>(() =>
             new Address(1, "Street", "City", "Province", value!, "Country"));
-    }
 
-   
     [Theory]
     [InlineData(null)]
+    public void Country_Null_Throws(string? value)
+        => Assert.Throws<ArgumentNullException>(() =>
+            new Address(1, "Street", "City", "Province", "Code", value!));
+
+    // Empty/whitespace -> ArgumentException
+    [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    public void Null_Country_Throws(string? value)
-    {
-        Assert.Throws<ArgumentNullException>(() =>
-            new Address(1, "Street", "City", "Province", "Code", value!));
-    }
+    public void StreetName_EmptyOrWhitespace_Throws(string value)
+        => Assert.Throws<ArgumentException>(() =>
+            new Address(1, value, "City", "Province", "Code", "Country"));
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void City_EmptyOrWhitespace_Throws(string value)
+        => Assert.Throws<ArgumentException>(() =>
+            new Address(1, "Street", value, "Province", "Code", "Country"));
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Province_EmptyOrWhitespace_Throws(string value)
+        => Assert.Throws<ArgumentException>(() =>
+            new Address(1, "Street", "City", value, "Code", "Country"));
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void PostalCode_EmptyOrWhitespace_Throws(string value)
+        => Assert.Throws<ArgumentException>(() =>
+            new Address(1, "Street", "City", "Province", value, "Country"));
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Country_EmptyOrWhitespace_Throws(string value)
+        => Assert.Throws<ArgumentException>(() =>
+            new Address(1, "Street", "City", "Province", "Code", value));
+
+    // Street number guard (if you added it)
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void StreetNumber_NonPositive_Throws(int n)
+        => Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new Address(n, "Street", "City", "Province", "Code", "Country"));
 }
