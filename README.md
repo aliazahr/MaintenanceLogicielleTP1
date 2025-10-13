@@ -6,11 +6,11 @@
    ```bash
    cd path/to/SchoolManagerApp
    ```
-4. **Exécute** la commande suivante pour lancer l'application:
+3. **Exécute** la commande suivante pour lancer l'application:
    ```bash
    dotnet run
    ```
-5.  **Exécute** la commande suivante pour implémenter les variables d'environnement dynamiques (vous pouvez mettre les valeurs de votre choix):
+4. **Exécute** la commande suivante pour implémenter les variables d'environnement dynamiques (vous pouvez mettre les valeurs de votre choix):
    ```bash
    $env:APP_NetworkDelay__MinMs = "800"
    $env:APP_NetworkDelay__MaxMs = "800"
@@ -18,10 +18,21 @@
    $env:APP_Salaries__ReceptionistIncome = "12000"
    $env:APP_Salaries__PrincipalIncome = "60000"
    ```
-6. Pour les variables d'environnements statiques, il est possible de les modifier dans le fichier appsettings.json 
+Pour les variables d'environnements statiques, il est possible de les modifier dans le fichier appsettings.json 
+
+## Comment exécuter les tests
+1. **Navigue** jusqu'au dossier du projet avec la commande:
+   ```bash
+   cd path/to/SchoolManagerAppTests
+   ```
+2. **Exécute** la commande suivante pour lancer l'application:
+   ```bash
+   dotnet test
+   ```
 ---
 
 ## Changements effectués
+
 ### 1. Option pour **annuler une opération (_Cancel_)**
 Lorsqu'on sélectionne une action (ex: _Add_), il est maintenant possible d'**annuler l'opération** avant de choisir un membre à ajouter.
 Cette fonctionnalité rend le programme plus intuitive si l'utilisateur change d'avis ou sélectionne par erreur.
