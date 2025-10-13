@@ -12,6 +12,11 @@ namespace SchoolManager
         static public List<Teacher> Teachers = new List<Teacher>();
         static public Principal? Principal;
         static public Receptionist? Receptionist;
+        
+        // Configuration values from appsettings.json
+        static public int DefaultPrincipalIncome = 50000;
+        static public int DefaultTeacherIncome = 45000;
+        static public int DefaultReceptionistIncome = 35000;
 
         enum SchoolMemberType
         {
@@ -63,7 +68,7 @@ namespace SchoolManager
             UndoManager.UndoLastAction();
         }
 
-        public static void AddPrincpal()
+        public static void AddPrincipal()
         {
             try
             {
@@ -71,6 +76,12 @@ namespace SchoolManager
                 if (member == null)
                 {
                     throw new InvalidOperationException("Failed to create principal with provided attributes");
+                }
+
+                if (Principal == null)
+                {
+                    Console.WriteLine("\nPrincipal not initialized. Cannot add principal.");
+                    return;
                 }
 
                 Principal.Name = member.Name;
@@ -124,10 +135,10 @@ namespace SchoolManager
                 {
                     Console.WriteLine("Failed to collect teacher information. Operation cancelled.");
                     return;
-                }
+                }   
 
-                Teacher newTeacher = new Teacher(member.Name, member.Address, member.PhoneNumber);
-                newTeacher.Subject = UserConsole.AskQuestionName("Enter subject: ");
+                string subject = UserConsole.AskQuestionName("Enter subject: ");
+                Teacher newTeacher = new Teacher(member.Name, member.Address, member.PhoneNumber, subject, DefaultTeacherIncome);
 
                 var action = new AddTeacherAction(Teachers, newTeacher);
                 action.Execute();
@@ -185,6 +196,12 @@ namespace SchoolManager
             switch (memberType)
             {
                 case 1:
+                    if (Principal == null)
+                    {
+                        Console.WriteLine("\nNo principal available to display.");
+                        return;
+                    }
+
                     Console.WriteLine("\nThe Principal's details are:");
                     Console.WriteLine(Principal.ToString());
                     break;
@@ -199,6 +216,12 @@ namespace SchoolManager
                         Console.WriteLine(student.ToString());
                     break;
                 case 4:
+                    if (Receptionist == null)
+                    {
+                        Console.WriteLine("\nNo receptionist available to display.");
+                        return;
+                    }
+
                     Console.WriteLine("\nThe Receptionist's details are:");
                     Console.WriteLine(Receptionist.ToString());
                     break;
@@ -317,6 +340,12 @@ namespace SchoolManager
             switch (choice)
             {
                 case 1:
+                    if (Receptionist == null)
+                    {
+                        Console.WriteLine("\nNo receptionist available to handle complaints.");
+                        return;
+                    }
+
                     string complaintText = UserConsole.AskQuestion("Enter your complaint: ");
                     var action = new ComplaintAction(complaintText);
                     action.Execute();
@@ -352,12 +381,10 @@ namespace SchoolManager
             Address receptionistAddress = new Address(123, "Boulevard Rosemont", "Montreal", "QC", "A1A 1A1", "Canada");
             Address principalAddress = new Address(456, "Rue Gauchetiere", "Montreal", "QC", "B2B 2B2", "Canada");
 
-            Principal = new Principal("Principal", principalAddress, "514-123-4567");
+            Principal = new Principal("Principal", principalAddress, "514-123-4567", DefaultPrincipalIncome);
 
             Receptionist = new Receptionist("Receptionist", receptionistAddress, "514-123-4567");
             Receptionist.ComplaintRaised += HandleComplaintRaised;
-
-            Principal = new Principal("Principal", principalAddress, "514-123-4567");
 
             for (int i = 0; i < 10; i++)
             {
@@ -368,15 +395,15 @@ namespace SchoolManager
                 string studentPhone = $"514-000-000{i}";
                 string teacherPhone = $"514-111-111{i}";
                 Students.Add(new Student(i.ToString(), studentAddress, studentPhone, i * 10));
-                Teachers.Add(new Teacher(i.ToString(), teacherAddress, teacherPhone));
+                Teachers.Add(new Teacher(i.ToString(), teacherAddress, teacherPhone, "Math", DefaultTeacherIncome));
             }
         }
 
         public static async Task Main(string[] args)
         {
             // Just for manual testing purposes.
-            AddData();
             SetupConfig();
+            AddData();
 
             Console.WriteLine("-------------- Welcome ---------------\n");
 
@@ -423,14 +450,30 @@ namespace SchoolManager
                 .AddEnvironmentVariables(prefix: "APP_")
                 .Build();
 
-            var networkDelaySettings = config.GetRequiredSection("NetworkDelay").Get<NetworkDelaySettings>();
+            var networkDelaySettings = new NetworkDelaySettings();
+            if (networkDelaySettings == null)
+            {
+                throw new InvalidOperationException("Failed to load NetworkDelay settings from configuration.");
+            }
+
             config.GetSection("NetworkDelay").Bind(networkDelaySettings);
 
+            Console.WriteLine("\n--- Configuration Settings ---");
             Console.WriteLine($"Min = {networkDelaySettings.MinMs}");
             Console.WriteLine($"Max = {networkDelaySettings.MaxMs}");
 
-            var schoolEmployeeSettings = config.GetRequiredSection("SchoolEmployeeSettings").Get<SchoolEmployeeSettings>();
+            var schoolEmployeeSettings = new SchoolEmployeeSettings();
+            if (schoolEmployeeSettings == null)
+            {
+                throw new InvalidOperationException("Failed to load SchoolEmployee settings from configuration.");
+            }
+            
             config.GetSection("SchoolEmployeeSettings").Bind(schoolEmployeeSettings);
+
+            // Store configuration values in static fields
+            DefaultPrincipalIncome = schoolEmployeeSettings.PrincipalIncome;
+            DefaultTeacherIncome = schoolEmployeeSettings.TeacherIncome;
+            DefaultReceptionistIncome = schoolEmployeeSettings.ReceptionistIncome;
 
             Console.WriteLine($"Teacher Income = {schoolEmployeeSettings.TeacherIncome}");
             Console.WriteLine($"Principal Income = {schoolEmployeeSettings.PrincipalIncome}");      

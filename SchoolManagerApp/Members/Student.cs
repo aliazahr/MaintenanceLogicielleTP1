@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SchoolManager
 {
@@ -7,6 +8,7 @@ namespace SchoolManager
     {
         private double? _grade;
 
+        [SetsRequiredMembers] // To indicate that this constructor sets all required members and can use constructor instead of object initializer
         public Student(string name, Address address, string phoneNumber, double? grade = null)
             : base(name, address, phoneNumber)
         {

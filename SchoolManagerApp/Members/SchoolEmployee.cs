@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace SchoolManager
@@ -10,6 +11,7 @@ namespace SchoolManager
 
         private int _totalEarnings;
     
+        [SetsRequiredMembers] // To indicate that this constructor sets all required members and can use constructor instead of object initializer
         protected SchoolEmployee(string name, Address address, string phoneNumber, int income)
             : base(name, address, phoneNumber)
         {
