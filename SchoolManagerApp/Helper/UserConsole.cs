@@ -156,7 +156,7 @@ namespace SchoolManager
         {
             if (string.IsNullOrWhiteSpace(question))
             {
-                throw new ArgumentException("\nQuestion cannot be null or whitespace.");
+                throw new ArgumentNullException("\nQuestion cannot be null or whitespace.");
             }
 
             while (true)
