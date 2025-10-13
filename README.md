@@ -61,6 +61,14 @@ Le _network delay_ a été converti en fonction **asynchrone** afin d'améliorer
 Ainsi, comme plusieurs professeurs peuvent être payés en même temps, le programme affiche désormais les paiements les uns après les autres dans un délai total de 5 secondes, au lieu d'allonger ce délai pour chaque paiement.
 
 ---
+### 5. Amélioration de la gestion des sélections invalides
+Le comportement du programme a été modifié afin que lorsqu'un membre non valide est sélectionné, l'opération ne soit plus annulée automatiquement.
+Désormais, le programme redemmande à l'utilisateur de faire un autre choix. <br>
+Exemple:
+- Lorsqu'on choisit **_Add_**, il n'est pas permis d'ajouter un _Principal_ ou un _Receptionist_. Si l'utilisateur les sélectionne, le programme lui demande simplement de choisir un autre type de membre au lieu de revenir au menu principal.
+- Lorsqu'on choisit **_Pay_**, si l'utilisateur sélectionne un _Student_, le programme redemande un autre choix plutôt que d'annuler l'opération. <br>
+
+Avant cette modification, ces cas faisaient automatiquement revenir au menu principal. Ce n'est plus le cas maintenant.
 
 ### 5. SchoolMember
 Smells: Primitive Obsession, Public Fields, Missing Validation, Inconsistent Naming.
